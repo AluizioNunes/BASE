@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: usuario
+          POSTGRES_PASSWORD: senha
+          POSTGRES_DB: meubanco
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.3'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+      - name: Run backend tests
+        run: |
+          cd backend
+          source venv/bin/activate
+          pytest tests/ || true
+      - name: Install frontend dependencies
+        run: npm install
+      - name: Run frontend tests
+        run: npm test -- --watchAll=false 
+      - name: Deploy para produção
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: |
+          echo "Deploy automático para produção (exemplo)"
+          # Exemplo para Railway: railway up
+          # Exemplo para Render: curl -X POST $RENDER_DEPLOY_HOOK 

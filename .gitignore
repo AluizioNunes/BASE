@@ -1,5 +1,24 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Python
+#
+# Ambiente Virtual
+/backend/venv/
+
+# Arquivos de ambiente
+# Ignora todos os arquivos .env, exceto o de exemplo
+*.env
+!.env.example
+
+# Caches do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de banco de dados SQLite
+*.db
+*.sqlite3
+
 # dependencies
 /node_modules
 /.pnp
