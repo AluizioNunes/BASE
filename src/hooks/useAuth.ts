@@ -1,8 +1,5 @@
-import { useState } from "react";
+import { useAuthContext } from '../context/AuthContext';
 
 export function useAuth() {
-  const [user, setUser] = useState(null);
-  const login = (userData: any) => setUser(userData);
-  const logout = () => setUser(null);
-  return { user, login, logout };
+  return useAuthContext();
 } 

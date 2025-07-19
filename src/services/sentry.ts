@@ -14,4 +14,14 @@ export function logBreadcrumb(message: string, category = "custom") {
   });
 }
 
+// Captura global de erros não tratados
+if (typeof window !== 'undefined') {
+  window.onerror = function (message, source, lineno, colno, error) {
+    Sentry.captureException(error || message);
+  };
+  window.onunhandledrejection = function (event) {
+    Sentry.captureException(event.reason);
+  };
+}
+
 export default Sentry; 

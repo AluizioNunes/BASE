@@ -1,4 +1,5 @@
-from pydantic import BaseSettings, AnyUrl
+from pydantic_settings import BaseSettings
+from pydantic import AnyUrl
 from typing import Optional
 
 class Settings(BaseSettings):
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # Configurações de CORS (opcional, pode ser sobrescrito no main.py)
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8080"]
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
     
     class Config:
         env_file = ".env"

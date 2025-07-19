@@ -1,51 +1,116 @@
 version: '3.9'
 services:
+  traefik:
+    image: traefik:v3.4
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myresolver.acme.email=seu-email@exemplo.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Painel do Traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/BASE/volumes/traefik_letsencrypt:/letsencrypt
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   db:
     image: postgres:17.5
     restart: always
-    environment:
-      POSTGRES_USER: usuario
-      POSTGRES_PASSWORD: senha
-      POSTGRES_DB: meubanco
+    env_file:
+      - .env.db
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - /var/lib/docker/BASE/volumes/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis:8.0
     ports:
       - "6379:6379"
     restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - /var/lib/docker/BASE/volumes/redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
 
   backend:
     build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: ["/wait-for-it.sh", "db:5432", "--", "/wait-for-it.sh", "redis:6379", "--", "/wait-for-it.sh", "rabbitmq:5672", "--", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
       - ./backend:/app
-    environment:
-      - DATABASE_URL=postgresql://usuario:senha@db:5432/meubanco
-      - APP_NAME=MeuProjetoBase
-      - DEBUG=True
-      - SECRET_KEY=troque-por-uma-chave-secreta
-      - BACKEND_CORS_ORIGINS=http://localhost:3000
+      - /var/lib/docker/BASE/volumes/uploads_data:/app/uploads
+    env_file:
+      - .env.backend
     depends_on:
-      - db
-      - redis
-    ports:
-      - "8000:8000"
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web,websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build: .
     command: npm start
     volumes:
       - .:/app
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000/api
-    ports:
-      - "3000:3000"
+    env_file:
+      - .env.frontend
     depends_on:
-      - backend
-
-volumes:
-  pgdata: 
+      backend:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web,websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3 

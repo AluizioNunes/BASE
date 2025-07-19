@@ -1,17 +1,35 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Response, Depends, HTTPException
+from pydantic import BaseModel
+from app.modules.auth.services import authenticate_user, create_access_token, get_current_user
+import os
 
 router = APIRouter()
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 @router.post("/login")
-def login():
-    return {"message": "Endpoint de login a ser implementado."}
+def login(data: LoginRequest, response: Response):
+    user = authenticate_user(data.email, data.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    access_token = create_access_token({"sub": user["email"]})
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=bool(os.getenv("PRODUCTION", False)),
+        samesite="lax",
+        max_age=60*60*24  # 1 dia
+    )
+    return {"message": "Login realizado com sucesso"}
 
-# Exemplo de rota OAuth2 (Google)
-@router.get("/oauth2/google")
-def oauth2_google(request: Request):
-    # Exemplo: redireciona para consentimento do Google
-    google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth?client_id=SEU_CLIENT_ID&redirect_uri=SEU_REDIRECT_URI&response_type=code&scope=email%20profile"
-    return RedirectResponse(google_auth_url)
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("access_token")
+    return {"message": "Logout realizado com sucesso"}
 
-# Documentação: implemente o fluxo completo usando bibliotecas como authlib ou fastapi-users para produção.
+@router.get("/profile")
+def profile(user=Depends(get_current_user)):
+    return user

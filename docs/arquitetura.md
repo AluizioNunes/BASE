@@ -2,8 +2,9 @@
 
 ```mermaid
 graph TD;
-  Usuario["Usuário"] -->|HTTP| Frontend["Frontend (React)"]
-  Frontend -->|REST API| Backend["Backend (FastAPI)"]
+  Usuario["Usuário"] -->|HTTP/HTTPS| Proxy["Traefik 3.4 (Reverse Proxy)"]
+  Proxy -->|/| Frontend["Frontend (React, PWA, i18n, Service Worker)"]
+  Proxy -->|/api| Backend["Backend (FastAPI, JWT via Cookie)"]
   Backend -->|SQL| DB[("PostgreSQL 17.5")]
   Backend -->|/metrics| Prometheus[("Prometheus")]
   Backend -->|Sentry| Sentry[("Sentry")]
@@ -13,13 +14,17 @@ graph TD;
   Backend -->|Tarefas| Celery[("Celery Workers")]
   Backend -->|Upload| Files[("Upload Seguro")]
   Backend -->|Privacidade| LGPD[("LGPD/GDPR")]
+  Proxy -->|Healthchecks| Health[("Healthchecks")]
+  Backend -->|Logs| Loki[("Loki")]
+  Loki --> Grafana[("Grafana")]
 ```
 
-## Serviços
-- **Redis 8.0:** cache e backend do Celery
-- **RabbitMQ:** filas para tarefas assíncronas
-- **Celery:** processamento assíncrono
-- **Alembic:** versionamento de banco
-- **Upload seguro:** rotas protegidas para arquivos
-- **LGPD/GDPR:** políticas e endpoints de privacidade
-- **docker-compose 3.9:** orquestração de todos os serviços 
+## Serviços e recursos
+- Reverse proxy (Traefik 3.4) para HTTPS, roteamento e segurança
+- Healthchecks para todos os serviços
+- Volumes persistentes para uploads e banco
+- Monitoramento centralizado (Grafana/Loki, Prometheus, Sentry)
+- Deploy blue/green, backup automatizado, auditoria de dependências
+- Autenticação moderna via cookies httpOnly
+- Frontend PWA, internacionalização, acessibilidade, testes automatizados
+- Pronto para reuso como template 

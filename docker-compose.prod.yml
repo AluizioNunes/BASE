@@ -1,0 +1,113 @@
+version: '3.9'
+services:
+  traefik:
+    image: traefik:v3.4
+    command:
+      - --api.insecure=false
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myresolver.acme.email=seu-email@exemplo.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik_letsencrypt:/letsencrypt
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:3.5.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+
+  frontend:
+    command: npm run build && npx serve -s build
+    volumes:
+      - ./build:/app/build
+    environment:
+      - REACT_APP_API_URL=https://seu-dominio.com/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`seu-dominio.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
+      - backend
+
+  backend:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      - DEBUG=False
+      - BACKEND_CORS_ORIGINS=https://seu-dominio.com
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`seu-dominio.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    depends_on:
+      - traefik
+      - db
+      - redis
+      - rabbitmq
+
+  db:
+    environment:
+      - POSTGRES_USER=usuario
+      - POSTGRES_PASSWORD=senha
+      - POSTGRES_DB=meubanco
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  pgdata:
+  grafana_data:
+  loki_data:
+  traefik_letsencrypt:
+  redis_data:
+  rabbitmq_data: 
