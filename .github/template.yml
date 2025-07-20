@@ -1,0 +1,95 @@
+name: Template Configuration
+
+description: |
+  Template completo e profissional para aplicações web modernas.
+  
+  ## Características:
+  - React 19 + TypeScript
+  - FastAPI + Python 3.11+
+  - PostgreSQL + Redis + RabbitMQ
+  - Docker + Traefik + Grafana
+  - CI/CD + Monitoramento
+  - LGPD/GDPR compliance
+
+# Configurações do template
+template:
+  # Arquivos que devem ser incluídos no template
+  include:
+    - "src/"
+    - "Backend/"
+    - "docs/"
+    - "scripts/"
+    - "public/"
+    - "docker-compose*.yml"
+    - "stack-*.yml"
+    - "*.env.example"
+    - "Dockerfile*"
+    - "requirements.txt"
+    - "package.json"
+    - "tsconfig.json"
+    - "loki-config.yaml"
+    - "LICENSE"
+    - "CHANGELOG.md"
+    - "CONTRIBUTING.md"
+    - ".github/"
+    - ".gitignore"
+
+  # Arquivos que devem ser excluídos do template
+  exclude:
+    - "node_modules/"
+    - "Backend/venv/"
+    - "Backend/__pycache__/"
+    - "Backend/app/__pycache__/"
+    - "src/__tests__/"
+    - ".env"
+    - ".env.local"
+    - ".env.production"
+    - "*.log"
+    - "*.sqlite3"
+    - "*.db"
+    - "coverage/"
+    - "build/"
+    - ".DS_Store"
+
+# Configurações de segurança
+security:
+  # Arquivos sensíveis que devem ser sempre excluídos
+  sensitive_files:
+    - ".env"
+    - ".env.local"
+    - ".env.production"
+    - "*.key"
+    - "*.pem"
+    - "*.crt"
+    - "secrets/"
+    - "credentials/"
+
+# Configurações de documentação
+documentation:
+  required_files:
+    - "README.md"
+    - "docs/setup.md"
+    - "docs/arquitetura.md"
+    - "docs/deploy.md"
+    - "LICENSE"
+    - "CHANGELOG.md"
+    - "CONTRIBUTING.md"
+
+# Configurações de CI/CD
+ci_cd:
+  required_files:
+    - ".github/workflows/ci.yml"
+    - "docker-compose.yml"
+    - "docker-compose.dev.yml"
+    - "docker-compose.prod.yml"
+
+# Configurações de desenvolvimento
+development:
+  required_files:
+    - "package.json"
+    - "tsconfig.json"
+    - "Backend/requirements.txt"
+    - "Dockerfile"
+    - "Backend/Dockerfile"
+    - "scripts/create-volumes.sh"
+    - "scripts/setup-portainer.sh" 

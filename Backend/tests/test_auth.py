@@ -10,5 +10,5 @@ def test_root():
     assert "message" in response.json()
 
 def test_login_fail():
-    response = client.post("/auth/login", json={"email": "fake@fake.com", "password": "wrong"})
+    response = client.post("/api/v1/auth/login", json={"email": "fake@fake.com", "password": "wrong"})
     assert response.status_code in [200, 401, 400]  # Ajuste conforme implementação 

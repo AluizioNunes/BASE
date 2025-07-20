@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentação
+    url: https://github.com/AluizioNunes/BASE-REACT-FASTAPI/tree/main/docs
+    about: Consulte a documentação completa do projeto
+  - name: 💬 Discussions
+    url: https://github.com/AluizioNunes/BASE-REACT-FASTAPI/discussions
+    about: Participe das discussões da comunidade
+  - name: 📧 Contato Direto
+    url: mailto:seu-email@exemplo.com
+    about: Entre em contato diretamente para suporte urgente 

@@ -2,6 +2,7 @@ version: '3.9'
 services:
   traefik:
     image: traefik:v3.4
+    container_name: base-traefik
     command:
       - --api.insecure=false
       - --providers.docker=true
@@ -9,7 +10,7 @@ services:
       - --entrypoints.websecure.address=:443
       - --certificatesresolvers.myresolver.acme.httpchallenge=true
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.myresolver.acme.email=seu-email@exemplo.com
+      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-admin@exemplo.com}
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     ports:
       - "80:80"
@@ -22,68 +23,73 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/BASE/volumes/portainer_data:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`seu-dominio.com`) && PathPrefix(`/portainer`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls.certresolver=myresolver"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-      - "traefik.http.middlewares.portainer-stripprefix.stripprefix.prefixes=/portainer"
-      - "traefik.http.routers.portainer.middlewares=portainer-stripprefix"
-    depends_on:
-      - traefik
+    networks:
+      - base-network
 
   grafana:
     image: grafana/grafana:latest
+    container_name: base-grafana
     ports:
       - "3001:3000"
     volumes:
       - /var/lib/docker/BASE/volumes/grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
     depends_on:
       - loki
+    networks:
+      - base-network
 
   loki:
     image: grafana/loki:3.5.1
+    container_name: base-loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - /var/lib/docker/BASE/volumes/loki_data:/loki
+    networks:
+      - base-network
 
   frontend:
+    image: ${REGISTRY:-localhost}/base-frontend:${TAG:-latest}
+    container_name: base-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: npm run build && npx serve -s build
     volumes:
       - ./build:/app/build
     environment:
-      - REACT_APP_API_URL=https://seu-dominio.com/api
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-https://localhost/api}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`seu-dominio.com`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     depends_on:
       - traefik
       - backend
+    networks:
+      - base-network
 
   backend:
+    image: ${REGISTRY:-localhost}/base-backend:${TAG:-latest}
+    container_name: base-backend
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     environment:
-      - DEBUG=False
-      - BACKEND_CORS_ORIGINS=https://seu-dominio.com
+      - DEBUG=${DEBUG:-False}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-https://localhost}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://usuario:senha@db:5432/meubanco}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://guest:guest@rabbitmq:5672/}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`seu-dominio.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
@@ -92,12 +98,16 @@ services:
       - db
       - redis
       - rabbitmq
+    networks:
+      - base-network
 
   db:
+    image: postgres:17.5
+    container_name: base-db
     environment:
-      - POSTGRES_USER=usuario
-      - POSTGRES_PASSWORD=senha
-      - POSTGRES_DB=meubanco
+      - POSTGRES_USER=${POSTGRES_USER:-usuario}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-senha}
+      - POSTGRES_DB=${POSTGRES_DB:-meubanco}
     volumes:
       - /var/lib/docker/BASE/volumes/pgsql_data:/var/lib/postgresql/data
     healthcheck:
@@ -105,8 +115,12 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - base-network
 
   redis:
+    image: redis:8.0-alpine
+    container_name: base-redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
@@ -114,8 +128,12 @@ services:
       retries: 3
     volumes:
       - /var/lib/docker/BASE/volumes/redis_data:/data
+    networks:
+      - base-network
 
   rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: base-rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 30s
@@ -123,5 +141,11 @@ services:
       retries: 3
     volumes:
       - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - base-network
+
+networks:
+  base-network:
+    driver: bridge
 
 # Volumes são gerenciados diretamente nos caminhos /var/lib/docker/BASE/volumes/ 
