@@ -6,25 +6,27 @@
 - Visualize logs dos containers com queries como `{container="backend"}`
 
 ## Prometheus
-- Endpoint `/metrics` expõe métricas do backend (FastAPI).
+- Endpoint `/metrics` expõe métricas do backend (FastAPI 0.116.1).
 - Monitore uso de CPU, memória, requisições, etc.
 
 ## Sentry
-- Backend e frontend integrados com Sentry para rastreamento de erros e breadcrumbs.
+- Backend e frontend integrados com Sentry 2.33.0 para rastreamento de erros e breadcrumbs.
 - Configure sua DSN real em produção.
 
 ## Healthchecks
 - Healthchecks configurados no docker-compose para todos os serviços críticos (backend, frontend, db, redis, rabbitmq, etc).
 
-## Redis 8.0
-- Monitore o status do Redis com `redis-cli info`.
+## Redis
+- Redis Server: 8.0 (serviço)
+- Redis Client (Python): 6.2.0 (biblioteca)
+- Monitore o status do Redis Server com `redis-cli info`.
 
-## Celery
+## Celery 5.5.3
 - Monitore tarefas com Flower (`celery -A app.core.celery_app.celery_app flower`).
 
 ## Logs estruturados
-- Backend: loguru
-- Frontend: Sentry breadcrumbs
+- Backend: loguru 0.7.3
+- Frontend: Sentry 2.33.0 breadcrumbs
 - Logs centralizados via Loki/Grafana
 
 ## Como rodar tudo

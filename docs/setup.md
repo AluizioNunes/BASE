@@ -16,12 +16,12 @@ pip install -r requirements.txt
 cp .env.example .env  # Configure variáveis de ambiente
 ```
 
-## 3. Frontend (React)
+## 3. Frontend (React + Vite)
 ```bash
 cd ../
 npm install
-cp .env.example .env  # Configure REACT_APP_API_URL
-npm start
+cp .env.example .env  # Configure VITE_API_URL
+npm run dev
 ```
 
 ## 4. Rodar tudo com Docker Compose
@@ -34,13 +34,13 @@ docker-compose up --build
 
 ## 6. Testes
 - Backend: pytest
-- Frontend: npm test (inclui jest-axe para acessibilidade)
+- Frontend: npm run test (Vitest)
 
 ## 7. Internacionalização (i18n)
 - Suporte a pt/en. Edite `src/i18n/index.ts` para novos idiomas.
 
 ## 8. PWA
-- Service worker ativado por padrão. Fallback offline em `public/offline.html`.
+- PWA ativado via vite-plugin-pwa. Instale no celular ou desktop para acesso offline.
 
 ## 9. Recomendações
 - Healthchecks para todos os serviços

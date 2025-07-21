@@ -1,4 +1,6 @@
 // src/serviceWorkerRegistration.ts
+// ATENÇÃO: Para uso com Vite, recomenda-se utilizar um plugin como vite-plugin-pwa para registro automático do service worker.
+// O registro manual pode ser adaptado conforme a necessidade.
 // Função para registrar o service worker (PWA) padrão do CRA
 export function register() {
   if ('serviceWorker' in navigator) {

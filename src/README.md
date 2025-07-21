@@ -1,10 +1,38 @@
-# Frontend React (PWA + i18n + Segurança)
+# Frontend React (Vite + Tailwind + PWA)
+
+## Stack
+- React 18+
+- Vite 5+
+- Tailwind CSS 4
+- shadcn-ui
+- Lucide React
+- date-fns
+- Framer Motion
+- PWA (vite-plugin-pwa)
+- Internacionalização (i18n)
+- Testes automatizados (Vitest)
+
+## Estrutura
+```
+src/
+  components/    # Componentes visuais (ui, PrivateRoute, etc.)
+  context/       # Contextos globais (ex: AuthContext)
+  hooks/         # Hooks customizados (ex: useAuth)
+  i18n/          # Internacionalização (pt, en)
+  layouts/       # Layouts base
+  pages/         # Páginas (adicione suas páginas aqui)
+  services/      # Integração API, Sentry
+  styles/        # CSS global (index.css)
+  utils/         # Utilitários (ex: cn)
+  __tests__/     # Testes automatizados
+```
 
 ## Como rodar em desenvolvimento
 ```bash
 npm install
-npm start
+npm run dev
 ```
+Acesse: http://localhost:5173/
 
 ## Build de produção
 ```bash
@@ -13,36 +41,28 @@ npm run build
 
 ## Servir build localmente (simulando produção)
 ```bash
-npx serve -s build
+npm run preview
+```
+
+## Testes
+```bash
+npm run test
+npm run test:ui
 ```
 
 ## Variáveis de ambiente
-- `REACT_APP_API_URL`: URL base da API (ex: http://localhost:8000/api/v1)
+- `VITE_API_URL`: URL base da API (ex: http://localhost:8000/api/v1)
 
 ## Internacionalização (i18n)
 - Suporte a português e inglês.
 - Para adicionar idiomas, edite `src/i18n/index.ts`.
 
 ## PWA (Progressive Web App)
-- Service worker ativado por padrão.
+- PWA ativado via vite-plugin-pwa.
 - Atualização automática de versão.
-- Fallback offline customizado em `public/offline.html`.
 - Instale no celular ou desktop para acesso offline.
 
-## Testes
-- Testes unitários: `npm test`
-- Testes de acessibilidade automatizados com `jest-axe`.
-
-## Segurança
-- Dados do backend são validados e sanitizados antes de exibir.
-- Tokens de autenticação são gerenciados via cookies httpOnly (backend).
-
-## Boas práticas
-- Lazy loading e code splitting para páginas.
-- Toast global para feedback ao usuário.
-- Contexto de autenticação global.
-- Pronto para integração com CI/CD e Docker.
-
----
-
-Consulte a documentação do backend para detalhes de autenticação e integração. 
+## Observações
+- Adicione suas páginas em `src/pages` e tipos globais em `src/types`.
+- Ajuste variáveis de ambiente conforme necessário.
+- Consulte a documentação do backend para detalhes de autenticação e integração. 

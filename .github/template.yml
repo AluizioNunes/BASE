@@ -92,4 +92,5 @@ development:
     - "Dockerfile"
     - "Backend/Dockerfile"
     - "scripts/create-volumes.sh"
-    - "scripts/setup-portainer.sh" 
+    - "scripts/setup-portainer.sh"
+    - "postcss.config.js"

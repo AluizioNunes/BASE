@@ -19,4 +19,8 @@ const Button: React.FC<ButtonProps> = ({ children, ...props }) => (
   <button {...props}>{children}</button>
 );
 export default Button;
-``` 
+```
+
+## Componentes UI
+
+Coloque aqui os componentes do shadcn/ui customizados em `src/components/ui/`. 

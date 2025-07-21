@@ -8,7 +8,7 @@
 - `GET /api/v1/files/download/{filename}` – Download seguro de arquivos
 
 ## Cache
-- O backend utiliza Redis 8.0 para cache de dados.
+- O backend utiliza Redis 6.2.0 para cache de dados.
 - Exemplos de uso em `app/core/cache.py`.
 
 ## Exemplo de upload
@@ -24,7 +24,7 @@ curl -O http://localhost:8000/api/v1/files/download/arquivo.txt
 ## Convenções
 - Todas as respostas são em JSON
 - Use sempre HTTPS em produção
-- Autenticação via JWT (Bearer Token) recomendada
+- Autenticação via JWT (Bearer Token, FastAPI 0.116.1, python-jose 3.5.0) recomendada
 
 ## Exemplos de resposta
 ```json
@@ -40,4 +40,4 @@ curl -O http://localhost:8000/api/v1/files/download/arquivo.txt
 3. Teste endpoints autenticados enviando o header `Authorization: Bearer <token>`.
 
 ## Swagger
-- Acesse `/docs` no backend para documentação interativa e exemplos de requisição/resposta. 
+- Acesse `/docs` no backend (FastAPI 0.116.1) para documentação interativa e exemplos de requisição/resposta. 

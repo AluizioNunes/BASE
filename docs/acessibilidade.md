@@ -23,7 +23,7 @@
 ```
 
 ## Testes automatizados
-- Use `jest-axe` para garantir acessibilidade básica nos testes unitários
+- Use Vitest e Testing Library para garantir acessibilidade básica nos testes unitários
 - Audite com Lighthouse (Chrome DevTools)
 
 ## Ferramentas úteis
