@@ -18,8 +18,6 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=base_network
-      - --providers.docker.watch=true
-      - --providers.docker.endpoint=unix:///var/run/docker.sock
       # Entrypoints
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -30,12 +28,8 @@ services:
       # Dashboard
       - --api.dashboard=true
       - --api.insecure=true
-      - --api=true
       # Logs
-      - --log.level=DEBUG
-      - --log.filePath=/var/log/traefik.log
-      - --accesslog=true
-      - --accesslog.filepath=/var/log/access.log
+      - --log.level=INFO
     ports:
       - "80:80"
       - "443:443"
@@ -43,17 +37,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
-      - /var/lib/docker/BASE/volumes/traefik_data/logs:/var/log
     labels:
       - "traefik.enable=true"
       # Dashboard Config
       - "traefik.http.routers.traefik.rule=PathPrefix(`/traefik`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.routers.traefik.priority=1"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
       - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     networks:
       - base_network
 
