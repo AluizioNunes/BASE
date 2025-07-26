@@ -8,16 +8,16 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     
     # Configurações do Banco de Dados
-    DATABASE_URL: AnyUrl
+    DATABASE_URL: str = "postgresql://BASE:BASE@db:5432/BASE"
     SQLALCHEMY_LOG_LEVEL: str = "INFO"
     
     # Configurações de Autenticação JWT
-    SECRET_KEY: str
+    SECRET_KEY: str = "BASE_SECRET_KEY_CHANGE_IN_PRODUCTION"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # Configurações de CORS (opcional, pode ser sobrescrito no main.py)
-    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: str = "http://localhost:3000"
     
     class Config:
         env_file = ".env"
