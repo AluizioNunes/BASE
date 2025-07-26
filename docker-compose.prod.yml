@@ -109,8 +109,8 @@ services:
       - GF_SECURITY_ADMIN_USER=BASE
       - GF_SECURITY_ADMIN_PASSWORD=BASE
       - GF_SERVER_HTTP_PORT=3010
-      - GF_SERVER_ROOT_URL=http://10.10.255.111/grafana
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=http://10.10.255.111:3010
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`10.10.255.111`) && PathPrefix(`/grafana`)"
@@ -118,6 +118,8 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3010"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      - "traefik.http.middlewares.grafana-headers.headers.customrequestheaders.X-Grafana-Root-Url=http://10.10.255.111/grafana"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix,grafana-headers"
     networks:
       - base_network
 
