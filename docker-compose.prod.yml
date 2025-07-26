@@ -2,7 +2,6 @@ version: '3.9'
 
 ############################
 #  DOCKER COMPOSE - PROD   #
-#  MODO SOMENTE TRAEFIK    #
 ############################
 
 services:
@@ -10,9 +9,13 @@ services:
     image: traefik:v3.4
     container_name: traefik
     restart: unless-stopped
-    environment:
-      - TZ=America/Manaus
-      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL:-base@itfact.com.br}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/BASE/volumes/Backend/traefik_data:/letsencrypt
     command:
       # Providers
       - --providers.docker=true
@@ -21,36 +24,22 @@ services:
       # Entrypoints
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      # ACME (Let's Encrypt)
-      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL:-base@itfact.com.br}
-      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
       # Dashboard
       - --api.dashboard=true
       - --api.insecure=true
       # Logs
       - --log.level=INFO
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
     labels:
       - "traefik.enable=true"
-      # Dashboard Config
-      - "traefik.http.routers.traefik.rule=PathPrefix(`/traefik`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
-      - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
+      # Dashboard
+      - "traefik.http.routers.dashboard.rule=Host(`10.10.255.111`) && PathPrefix(`/traefik`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=web"
+      - "traefik.http.middlewares.dashboard-stripprefix.stripprefix.prefixes=/traefik"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-stripprefix"
     networks:
       - base_network
 
-# ---------------------------------------------------------
-#  SERVIÇOS DESATIVADOS (comentados)
-# ---------------------------------------------------------
   frontend:
     build: .
     command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port 3000"
@@ -58,7 +47,7 @@ services:
       - VITE_API_URL=http://10.10.255.111/api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
@@ -80,7 +69,7 @@ services:
       - BACKEND_CORS_ORIGINS=http://10.10.255.111
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`10.10.255.111`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     networks:
@@ -96,11 +85,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=BASE
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.rabbitmq.entrypoints=web"
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
-      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
       - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
     networks:
       - base_network
 
