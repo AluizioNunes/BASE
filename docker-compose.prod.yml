@@ -44,7 +44,7 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$2y$05$p4R271GGBqBPdZiZsaAJ2eIuAvV38DSHLVbkP4SRr_1IovnHgkmty"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
       - "traefik.http.routers.traefik.middlewares=traefik-stripprefix,traefik-auth"
     networks:
       - base_network
