@@ -17,7 +17,7 @@ services:
     ports:
       - "3000:3000"   # React/Vite
     environment:
-      - VITE_API_URL=http://10.10.255.111:8080/api
+      - VITE_API_URL=http://10.10.255.111:8000/api
     networks:
       - base_network
     depends_on:
@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
     ports:
-      - "8080:8000"   # Host 8080 -> Container 8000
+      - "8000:8000"
     environment:
       - DEBUG=False
       - DBHOST=db
@@ -49,7 +49,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_DEFAULT_USER=BASE
       - RABBITMQ_DEFAULT_PASS=BASE
-      - BACKEND_CORS_ORIGINS=http://10.10.255.111:3000,http://10.10.255.111:8080
+      - BACKEND_CORS_ORIGINS=http://10.10.255.111:3000
     networks:
       - base_network
     depends_on:
