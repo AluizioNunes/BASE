@@ -53,27 +53,61 @@ cd BASE
 git checkout develop  # ou master
 ```
 
-### 2. Deploy Automatizado
+### 2. Deploy com Hooks de Inicialização (Recomendado)
 
+#### Opção A: Script Wrapper Completo
 ```bash
 # Torne o script executável
-chmod +x scripts/deploy-production.sh
+chmod +x scripts/start-production.sh
 
-# Execute o deploy
-sudo ./scripts/deploy-production.sh
+# Execute o deploy com verificações automáticas
+sudo ./scripts/start-production.sh
 ```
 
-### 3. Deploy Manual
+**O que este script faz:**
+- ✅ Verifica se Docker está rodando
+- ✅ Verifica arquivos necessários
+- ✅ Verifica espaço em disco (mínimo 5GB)
+- ✅ Verifica memória (mínimo 2GB)
+- ✅ Verifica e libera portas 80/443/8080
+- ✅ Prepara volumes com permissões corretas
+- ✅ Sobe containers com build
+- ✅ Aguarda inicialização
+- ✅ Verifica status e conectividade
+- ✅ Fornece relatório completo
+
+#### Opção B: Init Containers (Docker Compose)
+```bash
+# Deploy com containers de inicialização
+docker compose -f docker-compose.prod-with-init.yml up -d
+```
+
+**O que acontece:**
+- `init-volumes`: prepara volumes e permissões
+- `check-ports`: verifica portas
+- Todos os outros containers dependem desses
+- Containers só sobem após init containers terminarem
+
+#### Opção C: Profiles (Docker Compose Extensions)
+```bash
+# Deploy com verificações opcionais
+docker compose --profile init -f docker-compose.prod-extensions.yml up -d
+
+# Deploy normal (sem verificações)
+docker compose -f docker-compose.prod-extensions.yml up -d
+```
+
+### 3. Deploy Manual (Apenas se necessário)
 
 ```bash
 # 1. Parar containers existentes
 docker compose -f docker-compose.prod.yml down
 
-# 2. Limpar volumes
+# 2. Limpar volumes (CUIDADO: perde dados!)
 sudo rm -rf /var/lib/docker/BASE/volumes/*
 
 # 3. Criar diretórios
-sudo mkdir -p /var/lib/docker/BASE/volumes/{grafana_data,loki_data,postgres_data,redis_data,rabbitmq_data,uploads_data}
+sudo mkdir -p /var/lib/docker/BASE/volumes/{grafana_data,loki_data,postgres_data,redis_data,rabbitmq_data,uploads_data,traefik_data}
 
 # 4. Definir permissões
 sudo chown -R 472:472 /var/lib/docker/BASE/volumes/grafana_data
@@ -94,7 +128,7 @@ Após o deploy bem-sucedido, você terá acesso a:
 
 - **Frontend**: `https://SEU_IP/`
 - **Backend API**: `https://SEU_IP/api/`
-- **Grafana**: `https://SEU_IP/grafana/`
+- **Grafana**: `https://SEU_IP/grafana/` (admin/BASE)
 - **Loki**: `https://SEU_IP/loki/`
 - **Traefik Dashboard**: `https://SEU_IP/traefik/`
 - **Portainer**: `http://SEU_IP:8000/`
@@ -220,6 +254,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 - [ ] Servidor configurado com Docker
 - [ ] Repositório clonado
+- [ ] Scripts de deploy executados
 - [ ] Volumes criados com permissões corretas
 - [ ] Containers rodando sem erros
 - [ ] Frontend acessível via HTTPS
@@ -229,14 +264,48 @@ docker compose -f docker-compose.prod.yml up -d
 - [ ] Backup configurado
 - [ ] Monitoramento ativo
 
+## 🔧 Scripts Disponíveis
+
+### Scripts Principais
+- `scripts/start-production.sh` - **Deploy completo com verificações**
+- `scripts/setup-new-server.sh` - **Setup inicial de servidor**
+- `scripts/deploy-production.sh` - **Deploy automatizado**
+- `scripts/deploy-with-hooks.sh` - **Demonstração de hooks**
+
+### Arquivos Docker Compose
+- `docker-compose.prod.yml` - **Deploy normal**
+- `docker-compose.prod-with-init.yml` - **Com init containers**
+- `docker-compose.prod-extensions.yml` - **Com profiles**
+
+## 🎯 Recomendações por Cenário
+
+### 🏭 Produção (Recomendado)
+```bash
+# Use o script wrapper completo
+sudo ./scripts/start-production.sh
+```
+
+### 🧪 Desenvolvimento
+```bash
+# Use profiles para flexibilidade
+docker compose --profile init -f docker-compose.prod-extensions.yml up -d
+```
+
+### 🚀 Simplicidade
+```bash
+# Use init containers para automação total
+docker compose -f docker-compose.prod-with-init.yml up -d
+```
+
 ## 🆘 Suporte
 
 Se encontrar problemas:
 
 1. Verifique os logs: `docker compose -f docker-compose.prod.yml logs`
 2. Consulte este guia
-3. Abra uma issue no GitHub
-4. Verifique a documentação do Traefik, Grafana e Loki
+3. Execute o script de troubleshooting: `./scripts/deploy-with-hooks.sh`
+4. Abra uma issue no GitHub
+5. Verifique a documentação do Traefik, Grafana e Loki
 
 ---
 
