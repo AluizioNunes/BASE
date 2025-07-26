@@ -133,14 +133,13 @@ services:
       - REDIS_PASSWORD=BASE
       - HTTP_USER=BASE
       - HTTP_PASSWORD=BASE
+      - URL_PREFIX=/redis-commander
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.redis-commander.rule=PathPrefix(`/redis-commander`)"
       - "traefik.http.routers.redis-commander.priority=100"
       - "traefik.http.routers.redis-commander.entrypoints=web"
       - "traefik.http.services.redis-commander.loadbalancer.server.port=8081"
-      - "traefik.http.routers.redis-commander.middlewares=redis-commander-stripprefix"
-      - "traefik.http.middlewares.redis-commander-stripprefix.stripprefix.prefixes=/redis-commander"
     networks:
       - base_network
 
