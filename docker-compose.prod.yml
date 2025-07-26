@@ -35,6 +35,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    user: "472:472"
     volumes:
       - /var/lib/docker/BASE/volumes/grafana_data:/var/lib/grafana
     environment:
