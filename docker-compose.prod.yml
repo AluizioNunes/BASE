@@ -104,6 +104,26 @@ services:
     networks:
       - base_network
 
+  db:
+    image: postgres:17.5
+    volumes:
+      - /var/lib/docker/BASE/volumes/Backend/pgsql_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=BASE
+      - POSTGRES_USER=BASE
+      - POSTGRES_PASSWORD=BASE
+      - POSTGRES_SCHEMA=BASE
+    networks:
+      - base_network
+
+  redis:
+    image: redis:8.0-alpine
+    command: redis-server --requirepass BASE
+    volumes:
+      - /var/lib/docker/BASE/volumes/redis_data:/data
+    networks:
+      - base_network
+
 networks:
   base_network:
     driver: bridge 
