@@ -16,7 +16,7 @@ export default function Navbar({ now }: { now: Date }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <Avatar style={{ backgroundColor: '#2563eb' }}>RF</Avatar>
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', minWidth: 100 }}>
-          <span style={{ fontWeight: 700, lineHeight: 1 }}>Renata F.</span>
+          <span style={{ fontWeight: 700, lineHeight: 1 }}>ALUIZIO NUNES</span>
           <span style={{ fontSize: 12, color: '#888', lineHeight: 1.2 }}>Administrador</span>
         </div>
         <Button shape="circle" icon={<SettingOutlined />} style={{ marginLeft: 8 }} />
