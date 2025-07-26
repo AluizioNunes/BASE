@@ -226,3 +226,44 @@ services:
       - 256mb
       - --maxmemory-policy
       - allkeys-lru 
+    volumes:
+      - /var/lib/docker/BASE/volumes/redis_data:/data
+    networks:
+      - base_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "BASE", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:4.1.2-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=BASE
+      - RABBITMQ_DEFAULT_PASS=BASE
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - base_network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq.tls.certresolver=letsencrypt"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.routers.rabbitmq.priority=20"
+
+networks:
+  base_network:
+    driver: bridge
+    name: base_network 
