@@ -16,8 +16,10 @@ services:
     command:
       # Providers
       - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
+      - --providers.docker.exposedbydefault=true
       - --providers.docker.network=base_network
+      - --providers.docker.swarmMode=false
+      - --providers.docker.watch=true
       # Entrypoints
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
@@ -28,14 +30,15 @@ services:
       # Dashboard
       - --api.dashboard=true
       - --api.insecure=true
+      - --api.debug=true
       # Logs
-      - --log.level=INFO
+      - --log.level=DEBUG
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
       - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
     labels:
       - "traefik.enable=true"
