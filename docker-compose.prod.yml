@@ -36,7 +36,6 @@ services:
       # Rota HTTP para desenvolvimento (sem SSL)
       - "traefik.http.routers.traefik-http.rule=PathPrefix(`/traefik`)"
       - "traefik.http.routers.traefik-http.entrypoints=web"
-      - "traefik.http.routers.traefik-http.service=traefik"
       - "traefik.http.routers.traefik-http.middlewares=traefik-stripprefix"
 
   grafana:
@@ -54,7 +53,7 @@ services:
       - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=myresolver"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3001"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
       # Rota HTTP para desenvolvimento (sem SSL)
@@ -73,7 +72,7 @@ services:
       - "traefik.http.routers.loki.rule=PathPrefix(`/loki`)"
       - "traefik.http.routers.loki.entrypoints=websecure"
       - "traefik.http.routers.loki.tls.certresolver=myresolver"
-      - "traefik.http.services.loki.loadbalancer.server.port=3101"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
       - "traefik.http.routers.loki.middlewares=loki-stripprefix"
       - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
       # Rota HTTP para desenvolvimento (sem SSL)
