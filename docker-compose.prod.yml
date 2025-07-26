@@ -57,6 +57,11 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3001"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      # Rota HTTP para desenvolvimento (sem SSL)
+      - "traefik.http.routers.grafana-http.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana-http.entrypoints=web"
+      - "traefik.http.routers.grafana-http.service=grafana"
+      - "traefik.http.routers.grafana-http.middlewares=grafana-stripprefix"
 
   loki:
     image: grafana/loki:latest
@@ -72,6 +77,11 @@ services:
       - "traefik.http.services.loki.loadbalancer.server.port=3101"
       - "traefik.http.routers.loki.middlewares=loki-stripprefix"
       - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
+      # Rota HTTP para desenvolvimento (sem SSL)
+      - "traefik.http.routers.loki-http.rule=PathPrefix(`/loki`)"
+      - "traefik.http.routers.loki-http.entrypoints=web"
+      - "traefik.http.routers.loki-http.service=loki"
+      - "traefik.http.routers.loki-http.middlewares=loki-stripprefix"
 
   frontend:
     build:
