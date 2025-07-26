@@ -64,6 +64,15 @@ services:
       - GF_SERVER_HTTP_PORT=3010
       - GF_SERVER_ROOT_URL=http://10.10.255.111/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_AUTH_PROXY_ENABLED=true
+      - GF_AUTH_PROXY_HEADER_NAME=X-WEBAUTH-USER
+      - GF_AUTH_PROXY_HEADER_PROPERTY=username
+      - GF_AUTH_PROXY_AUTO_SIGN_UP=true
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_PROXY_HEADERS=Name:X-WEBAUTH-NAME Email:X-WEBAUTH-EMAIL
+      - GF_SECURITY_COOKIE_SECURE=false
+      - GF_SECURITY_COOKIE_SAMESITE=disabled
+      - GF_SECURITY_ALLOW_EMBEDDING=true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
@@ -71,6 +80,8 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3010"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      - "traefik.http.middlewares.grafana-headers.headers.customrequestheaders.X-WEBAUTH-USER=BASE"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix,grafana-headers"
     networks:
       - base_network
 
