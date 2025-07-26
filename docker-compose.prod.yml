@@ -10,30 +10,48 @@ services:
     image: traefik:v3.4
     container_name: traefik
     restart: unless-stopped
+    environment:
+      - TZ=America/Manaus
+      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL:?Defina TRAEFIK_ACME_EMAIL no .env}
     command:
       # Providers
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --providers.docker.network=base_network
-      # Entrypoint HTTP
-      - --entrypoints.web.address=:80
-      # Dashboard API
+      # Entrypoints
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      - --entrypoints.https.http.tls=true
+      # ACME (Let's Encrypt)
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      # Dashboard
       - --api.dashboard=true
       - --api.insecure=false
       # Logs
       - --log.level=INFO
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
     labels:
       - "traefik.enable=true"
+      # Basic Auth
       - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$2y$05$p4R271GGBqBPdZiZsaAJ2eIuAvV38DSHLVbkP4SRr_1IovnHgkmty"
-      - "traefik.http.routers.dashboard.rule=PathPrefix(`/dashboard`)"
-      - "traefik.http.routers.dashboard.entrypoints=web"
+      # Redirect HTTP -> HTTPS
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      # Dashboard
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DASHBOARD_DOMAIN:-traefik.local}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.dashboard.entrypoints=https"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=traefik-auth"
-      - "traefik.http.routers.dashboard.priority=30"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
     networks:
       - base_network
 
@@ -70,5 +88,4 @@ services:
 
 networks:
   base_network:
-    driver: bridge
-    name: base_network 
+    driver: bridge 
