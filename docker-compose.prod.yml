@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     environment:
       - TZ=America/Manaus
-      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL:?Defina TRAEFIK_ACME_EMAIL no .env}
+      - TRAEFIK_ACME_EMAIL=${TRAEFIK_ACME_EMAIL:-base@itfact.com.br}
     command:
       # Providers
       - --providers.docker=true
