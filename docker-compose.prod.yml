@@ -51,6 +51,7 @@ services:
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.routers.traefik-dashboard.middlewares=traefik-stripprefix"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
+      - "traefik.http.routers.traefik-dashboard.priority=20"
       
       # Dashboard alternativo
       - "traefik.http.routers.traefik-dashboard-alt.rule=Host(`10.10.255.111`) && PathPrefix(`/dashboard`)"
@@ -59,6 +60,7 @@ services:
       - "traefik.http.routers.traefik-dashboard-alt.service=api@internal"
       - "traefik.http.routers.traefik-dashboard-alt.middlewares=traefik-dashboard-stripprefix"
       - "traefik.http.middlewares.traefik-dashboard-stripprefix.stripprefix.prefixes=/dashboard"
+      - "traefik.http.routers.traefik-dashboard-alt.priority=20"
 
   grafana:
     image: grafana/grafana:latest
@@ -87,8 +89,7 @@ services:
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
-      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+      - "traefik.http.routers.grafana.priority=20"
 
   loki:
     image: grafana/loki:latest
@@ -112,6 +113,7 @@ services:
       - "traefik.http.services.loki.loadbalancer.server.port=3100"
       - "traefik.http.routers.loki.middlewares=loki-stripprefix"
       - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
+      - "traefik.http.routers.loki.priority=20"
 
   frontend:
     build:
@@ -180,6 +182,7 @@ services:
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
       - "traefik.http.routers.backend.middlewares=backend-stripprefix"
       - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.priority=20"
 
   db:
     image: postgres:17.5
@@ -241,6 +244,7 @@ services:
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
       - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
       - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.routers.rabbitmq.priority=20"
 
 networks:
   base_network:
