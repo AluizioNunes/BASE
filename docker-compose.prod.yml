@@ -33,6 +33,11 @@ services:
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
+      # Rota HTTP para desenvolvimento (sem SSL)
+      - "traefik.http.routers.traefik-http.rule=PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik-http.entrypoints=web"
+      - "traefik.http.routers.traefik-http.service=traefik"
+      - "traefik.http.routers.traefik-http.middlewares=traefik-stripprefix"
 
   grafana:
     image: grafana/grafana:latest
