@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Form, Checkbox, Button, Card } from 'antd';
 
 const permissoes = [

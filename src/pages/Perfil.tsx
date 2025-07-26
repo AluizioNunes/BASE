@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Form, Input, Button, Card } from 'antd';
 
 export default function Perfil() {

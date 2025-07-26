@@ -1,5 +1,5 @@
 
-import React from 'react';
+
 import { Modal as AntdModal } from 'antd';
 import type { ModalProps } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';

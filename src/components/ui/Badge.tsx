@@ -1,5 +1,4 @@
-import React from 'react';
-import { Badge as AntdBadge, BadgeProps } from 'antd';
+import { Badge as AntdBadge, type BadgeProps } from 'antd';
 import { motion } from 'framer-motion';
 
 export default function Badge(props: BadgeProps) {

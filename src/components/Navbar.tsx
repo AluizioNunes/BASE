@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Layout, Avatar, Badge, Button } from 'antd';
 import { CalendarOutlined, SettingOutlined } from '@ant-design/icons';
 import { format } from 'date-fns';

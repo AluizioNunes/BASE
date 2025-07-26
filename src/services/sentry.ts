@@ -16,7 +16,7 @@ export function logBreadcrumb(message: string, category = "custom") {
 
 // Captura global de erros não tratados
 if (typeof window !== 'undefined') {
-  window.onerror = function (message, source, lineno, colno, error) {
+  window.onerror = function (message, _source, _lineno, _colno, error) {
     Sentry.captureException(error || message);
   };
   window.onunhandledrejection = function (event) {

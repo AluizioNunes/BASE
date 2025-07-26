@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, List, Alert, Row, Col, Badge, Select } from 'antd';
+import { useState } from 'react';
+import { Card, Row, Col, Select } from 'antd';
 import { DollarOutlined, TeamOutlined, ShoppingOutlined, UserAddOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Button, ButtonProps } from 'antd';
+import { Button, type ButtonProps } from 'antd';
 import { motion } from 'framer-motion';
 
 export default function PrimaryButton(props: ButtonProps) {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api/v1";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -9,8 +9,8 @@ const api = axios.create({
 
 // Interceptor de resposta para tratamento global de erros
 api.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     // Aqui pode-se integrar com Toast ou Sentry
     // Exemplo: console.error(error.response?.data?.detail || error.message);
     return Promise.reject(error);

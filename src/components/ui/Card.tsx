@@ -1,5 +1,4 @@
-import React from 'react';
-import { Card as AntdCard, CardProps } from 'antd';
+import { Card as AntdCard, type CardProps } from 'antd';
 import { motion } from 'framer-motion';
 
 export default function Card(props: CardProps) {
