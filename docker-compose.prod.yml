@@ -25,7 +25,7 @@ services:
     environment:
       - VITE_API_URL=http://10.10.255.111/api
     ports:
-      - "3000:3000"
+      - "3001:3000"
     networks:
       - base_network
 
@@ -44,7 +44,7 @@ services:
       - DBSCHEMA=BASE
       - BACKEND_CORS_ORIGINS=http://10.10.255.111
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
       - base_network
 
@@ -57,7 +57,7 @@ services:
       - RABBITMQ_DEFAULT_USER=BASE
       - RABBITMQ_DEFAULT_PASS=BASE
     ports:
-      - "15672:15672"
+      - "15673:15672"
     networks:
       - base_network
 
