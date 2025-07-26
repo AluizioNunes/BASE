@@ -58,8 +58,7 @@ services:
       - VITE_API_URL=http://10.10.255.111/api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=PathPrefix(`/`) && !PathPrefix(`/redis-commander`, `/api`, `/rabbitmq`, `/traefik`)"
-      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
