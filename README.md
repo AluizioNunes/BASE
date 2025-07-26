@@ -2,19 +2,29 @@
 
 Este projeto é um template fullstack moderno, pronto para produção, com:
 
+## Principais recursos do Frontend
+- Dashboard com **cards de resumo animados** (Framer Motion)
+- **Filtros dinâmicos** (canal, mês) que afetam todos os gráficos
+- **Gráficos interativos** (pizza, barra, linha) com ECharts, atualizados em tempo real conforme os filtros
+- Animações Framer Motion em todos os componentes interativos (menus, modais, botões, badges, cards)
+- Layout global com Sidebar e Navbar fixos
+
 ## Versões das principais dependências
 
 ### Frontend
-- react: ^19.1.0
-- react-dom: ^19.1.0
-- vite: ^7.0.5
-- tailwindcss: ^4.1.11
-- vite-plugin-pwa: ^1.0.1
-- shadcn-ui: ^0.9.5
-- lucide-react: ^0.525.0
-- framer-motion: ^12.23.6
-- date-fns: ^4.1.0
-- vitest: ^3.2.4
+- react: 19.1.0
+- react-dom: 19.1.0
+- vite: 7.0.5
+- antd: 5.26.6
+- echarts: 5.6.0
+- echarts-for-react: 3.0.2
+- vite-plugin-pwa: 1.0.1
+- lucide-react: 0.525.0
+- framer-motion: 12.23.6
+- date-fns: 4.1.0
+- sonner: 2.0.6
+- react-router-dom: 7.7.0
+- vitest: 3.2.4
 
 ### Backend
 - fastapi==0.116.1
@@ -40,7 +50,6 @@ Este projeto é um template fullstack moderno, pronto para produção, com:
 - python-jose==3.5.0
 
 ## Estrutura de Pastas
-
 ```
 BASE/
   Backend/           # Backend FastAPI
@@ -50,7 +59,7 @@ BASE/
     tests/           # Testes automatizados
     uploads/         # Upload seguro de arquivos
   src/               # Frontend React + Vite
-    components/      # Componentes (ui, PrivateRoute, etc.)
+    components/      # Componentes (ui, Sidebar, Navbar, etc.)
     context/         # Contextos globais (ex: AuthContext)
     hooks/           # Hooks customizados
     i18n/            # Internacionalização
@@ -73,7 +82,7 @@ Acesse: http://localhost:5173/
 ## Como rodar o Backend
 ```bash
 cd Backend
-python -m venv venv
+python3.13 -m venv venv
 source venv/bin/activate  # ou .\venv\Scripts\activate no Windows
 pip install -r requirements.txt
 uvicorn app.main:app --reload

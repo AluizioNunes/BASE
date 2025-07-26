@@ -29,7 +29,7 @@ Se aplicável, adicione screenshots para ajudar a explicar seu problema.
  - Versão: [ex: 22]
  - Docker: [ex: 20.10.21]
  - Node.js: [ex: 20.0.0]
- - Python: [ex: 3.11.0]
+ - Python: [ex: 3.13.5]
 
 **Contexto adicional**
 Adicione qualquer outro contexto sobre o problema aqui.
@@ -42,7 +42,7 @@ Se aplicável, adicione logs para ajudar a diagnosticar o problema.
 docker-compose logs [serviço]
 
 # Logs do Frontend
-npm start
+npm run dev
 
 # Logs do Backend
 cd Backend && python -m uvicorn app.main:app --reload

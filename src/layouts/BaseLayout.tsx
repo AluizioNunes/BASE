@@ -1,24 +1,31 @@
-import { BaseButton } from "../components/ui/Button";
-import { Calendar } from "lucide-react";
-import { format } from "date-fns";
-import { motion } from "framer-motion";
+import React, { useState } from 'react';
+import { Layout } from 'antd';
+import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
 
-export function BaseLayout({ children }: { children: React.ReactNode }) {
+const { Content } = Layout;
+
+export default function BaseLayout({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(true);
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
-      <header className="px-6 py-4 bg-primary text-white flex items-center gap-2 shadow">
-        <Calendar size={28} className="mr-2" />
-        <span className="font-bold text-lg tracking-wide">BASE - SISTEMA BASE TEMPLATE</span>
-      </header>
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold mb-4">Bem-vindo ao sistema base!</h1>
-          <p className="mb-4 text-gray-700">Hoje é {format(new Date(), "dd/MM/yyyy")}.</p>
-          <BaseButton icon={<Calendar size={18} />} onClick={() => alert("Exemplo de ação!")}>Ação Exemplo</BaseButton>
-        </motion.div>
-        {children}
-      </main>
-      <footer className="px-6 py-2 text-xs text-gray-500 text-center">&copy; {new Date().getFullYear()} BASE TEMPLATE</footer>
-    </div>
+    <Layout style={{ minHeight: '100vh', flexDirection: 'row' }}>
+      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <Layout>
+        <Navbar now={new Date()} />
+        <Content
+          style={{
+            margin: 0,
+            padding: '12px 12px',
+            background: '#f5f6fa',
+            minHeight: '100vh',
+            maxWidth: 1600,
+            marginLeft: '2px',
+            marginRight: '2px',
+          }}
+        >
+          {children}
+        </Content>
+      </Layout>
+    </Layout>
   );
 } 

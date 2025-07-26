@@ -1,15 +1,20 @@
 version: '3.9'
 services:
   frontend:
-    command: npm start
+    command: npm run dev
     volumes:
       - .:/app
     environment:
-      - REACT_APP_API_URL=http://localhost/api
+      - VITE_API_URL=http://10.10.255.111/api
   backend:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./backend:/app
+      - ./Backend:/app
     environment:
       - DEBUG=True
-      - BACKEND_CORS_ORIGINS=http://localhost 
+      - BACKEND_CORS_ORIGINS=http://10.10.255.111
+      - DBHOST=db
+      - DBNAME=BASE
+      - DBUSER=BASE
+      - DBPASSWORD=BASE
+      - DBSCHEMA=BASE 

@@ -8,7 +8,7 @@ git clone <url-do-repo>
 ## 2. Backend (FastAPI)
 ```bash
 cd Backend
-python -m venv venv
+python3.13 -m venv venv
 . venv/Scripts/activate  # Windows
 # ou
 source venv/bin/activate  # Linux/Mac

@@ -48,7 +48,7 @@ template:
     - "*.sqlite3"
     - "*.db"
     - "coverage/"
-    - "build/"
+    - "dist/"
     - ".DS_Store"
 
 # Configurações de segurança

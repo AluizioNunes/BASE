@@ -14,7 +14,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080" # Painel do Traefik
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
@@ -24,63 +24,21 @@ services:
       timeout: 10s
       retries: 3
 
-  db:
-    image: postgres:17.5
-    restart: always
-    env_file:
-      - .env.db
-    ports:
-      - "5432:5432"
-    volumes:
-      - /var/lib/docker/BASE/volumes/pgsql_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  redis:
-    image: redis:8.0
-    ports:
-      - "6379:6379"
-    restart: always
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - /var/lib/docker/BASE/volumes/redis_data:/data
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    restart: always
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
-
   backend:
-    build: ./backend
-    command: ["/wait-for-it.sh", "db:5432", "--", "/wait-for-it.sh", "redis:6379", "--", "/wait-for-it.sh", "rabbitmq:5672", "--", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
-      - ./backend:/app
+      - ./Backend:/app
       - /var/lib/docker/BASE/volumes/uploads_data:/app/uploads
-    env_file:
-      - .env.backend
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+    environment:
+      - DBHOST=db
+      - DBNAME=BASE
+      - DBUSER=BASE
+      - DBPASSWORD=BASE
+      - DBSCHEMA=BASE
+      - BACKEND_CORS_ORIGINS=http://10.10.255.111
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
@@ -95,14 +53,11 @@ services:
 
   frontend:
     build: .
-    command: npm start
+    command: npm run dev
     volumes:
       - .:/app
-    env_file:
-      - .env.frontend
-    depends_on:
-      backend:
-        condition: service_healthy
+    environment:
+      - VITE_API_URL=http://10.10.255.111/api
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"

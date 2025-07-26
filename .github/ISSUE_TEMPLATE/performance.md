@@ -71,7 +71,7 @@ Qual melhoria de performance você espera:
 - **Sistema Operacional:** [ex: Ubuntu 22.04]
 - **Docker:** [ex: 20.10.21]
 - **Node.js:** [ex: 20.0.0]
-- **Python:** [ex: 3.11.0]
+ - **Python:** [ex: 3.13.5]
 - **Hardware:** [ex: 8GB RAM, 4 cores]
 
 ### 📚 Recursos

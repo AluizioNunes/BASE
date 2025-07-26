@@ -25,7 +25,7 @@ Descreva o que você já tentou para resolver sua dúvida:
 - **Sistema Operacional:** [ex: Ubuntu 22.04, Windows 11, macOS]
 - **Docker:** [ex: 20.10.21]
 - **Node.js:** [ex: 20.0.0]
-- **Python:** [ex: 3.11.0]
+- **Python:** [ex: 3.13.5]
 - **Navegador:** [ex: Chrome, Firefox, Safari]
 
 ## 📝 Contexto Adicional
