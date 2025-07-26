@@ -1,9 +1,5 @@
 version: '3.9'
 
-############################
-#  DOCKER COMPOSE - PROD   #
-############################
-
 services:
   traefik:
     image: traefik:v3.4
@@ -11,32 +7,16 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/BASE/volumes/Backend/traefik_data:/letsencrypt
     command:
-      # Providers
+      - --api.insecure=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=base_network
-      # Entrypoints
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      # Dashboard
-      - --api.dashboard=true
-      - --api.insecure=true
-      # Logs
-      - --log.level=INFO
-    labels:
-      - "traefik.enable=true"
-      # Dashboard
-      - "traefik.http.routers.dashboard.rule=Host(`10.10.255.111`) && PathPrefix(`/traefik`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=web"
-      - "traefik.http.middlewares.dashboard-stripprefix.stripprefix.prefixes=/traefik"
-      - "traefik.http.routers.dashboard.middlewares=dashboard-stripprefix"
     networks:
       - base_network
 
@@ -47,7 +27,7 @@ services:
       - VITE_API_URL=http://10.10.255.111/api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
