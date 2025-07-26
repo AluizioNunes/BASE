@@ -59,6 +59,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
@@ -135,6 +136,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.redis-commander.rule=PathPrefix(`/redis-commander`)"
+      - "traefik.http.routers.redis-commander.priority=100"
       - "traefik.http.routers.redis-commander.entrypoints=web"
       - "traefik.http.services.redis-commander.loadbalancer.server.port=8081"
       - "traefik.http.routers.redis-commander.middlewares=redis-commander-stripprefix"
