@@ -23,7 +23,7 @@ services:
       - --entrypoints.websecure.address=:443
       # ACME (Let's Encrypt)
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL:-base@itfact.com.br}
       - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
       # Dashboard
       - --api.dashboard=true
@@ -44,7 +44,7 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$$2y$$10$$QmFzZUJBU0UuQmFzZUJBU0UuQmFzZUJBU0UuQmFzZUJBU0Uu"
       - "traefik.http.routers.traefik.middlewares=traefik-stripprefix,traefik-auth"
     networks:
       - base_network
