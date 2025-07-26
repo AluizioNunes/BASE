@@ -13,7 +13,7 @@ services:
     command:
       - --api.insecure=true
       - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
+      - --providers.docker.exposedbydefault=true
       - --entrypoints.web.address=:80
       - --log.level=INFO
     networks:
@@ -24,11 +24,8 @@ services:
     command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port 3000"
     environment:
       - VITE_API_URL=http://10.10.255.111/api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    ports:
+      - "3000:3000"
     networks:
       - base_network
 
@@ -46,11 +43,8 @@ services:
       - DBPASSWORD=BASE
       - DBSCHEMA=BASE
       - BACKEND_CORS_ORIGINS=http://10.10.255.111
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`10.10.255.111`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.backend.entrypoints=web"
-      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    ports:
+      - "8000:8000"
     networks:
       - base_network
 
@@ -62,13 +56,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=BASE
       - RABBITMQ_DEFAULT_PASS=BASE
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
-      - "traefik.http.routers.rabbitmq.entrypoints=web"
-      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
-      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
-      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+    ports:
+      - "15672:15672"
     networks:
       - base_network
 
