@@ -51,33 +51,41 @@ services:
 # ---------------------------------------------------------
 #  SERVIÇOS DESATIVADOS (comentados)
 # ---------------------------------------------------------
-#  grafana:
-#    image: grafana/grafana:latest
-#    # ...
-#
-#  loki:
-#    image: grafana/loki:latest
-#    # ...
-#
-#  frontend:
-#    build: .
-#    # ...
-#
-#  backend:
-#    build: ./Backend
-#    # ...
-#
-#  db:
-#    image: postgres:17.5
-#    # ...
-#
-#  redis:
-#    image: redis:8.0-alpine
-#    # ...
-#
-#  rabbitmq:
-#    image: rabbitmq:4.1.2-management-alpine
-#    # ...
+  grafana:
+    image: grafana/grafana:latest
+    user: "472:472"
+    volumes:
+      - /var/lib/docker/BASE/volumes/grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=BASE
+      - GF_SECURITY_ADMIN_PASSWORD=BASE
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
+      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+    networks:
+      - base_network
+
+  rabbitmq:
+    image: rabbitmq:4.1.2-management-alpine
+    hostname: rabbitmq
+    volumes:
+      - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=BASE
+      - RABBITMQ_DEFAULT_PASS=BASE
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+    networks:
+      - base_network
 
 networks:
   base_network:
