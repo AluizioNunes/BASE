@@ -58,6 +58,7 @@ services:
       - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$2y$05$p4R271GGBqBPdZiZsaAJ2eIuAvV38DSHLVbkP4SRr_1IovnHgkmty"
       - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
       - "traefik.http.middlewares.traefik-dashboard-stripprefix.stripprefix.prefixes=/dashboard"
+      - "traefik.http.middlewares.traefik-addprefix.addprefix.prefix=/dashboard"
 
       # Dashboard principal
       - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/traefik`)"
