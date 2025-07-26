@@ -54,6 +54,7 @@ services:
 
   loki:
     image: grafana/loki:latest
+    user: "1000:1000"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - /var/lib/docker/BASE/volumes/loki_data:/loki
