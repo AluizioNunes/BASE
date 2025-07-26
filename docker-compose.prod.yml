@@ -56,20 +56,21 @@ services:
       - "traefik.enable=true"
       # Middlewares
       - "traefik.http.middlewares.traefik-auth.basicauth.users=BASE:$2y$05$p4R271GGBqBPdZiZsaAJ2eIuAvV38DSHLVbkP4SRr_1IovnHgkmty"
-      # Middlewares de stripprefix removidos – dashboard lida com prefixos internamente
+      - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
+      - "traefik.http.middlewares.traefik-dashboard-stripprefix.stripprefix.prefixes=/dashboard"
 
       # Dashboard principal
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`10.10.255.111`) && PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik-dashboard.rule=PathPrefix(`/traefik`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=web"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth,traefik-stripprefix"
       - "traefik.http.routers.traefik-dashboard.priority=30"
 
       # Dashboard alternativo (/dashboard)
-      - "traefik.http.routers.traefik-dashboard-alt.rule=Host(`10.10.255.111`) && PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.traefik-dashboard-alt.rule=PathPrefix(`/dashboard`)"
       - "traefik.http.routers.traefik-dashboard-alt.entrypoints=web"
       - "traefik.http.routers.traefik-dashboard-alt.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard-alt.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-dashboard-alt.middlewares=traefik-auth,traefik-dashboard-stripprefix"
       - "traefik.http.routers.traefik-dashboard-alt.priority=30"
 
   grafana:
