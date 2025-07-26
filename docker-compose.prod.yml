@@ -124,6 +124,24 @@ services:
     networks:
       - base_network
 
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=BASE
+      - HTTP_USER=BASE
+      - HTTP_PASSWORD=BASE
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redis-commander.rule=PathPrefix(`/redis-commander`)"
+      - "traefik.http.routers.redis-commander.entrypoints=web"
+      - "traefik.http.services.redis-commander.loadbalancer.server.port=8081"
+      - "traefik.http.routers.redis-commander.middlewares=redis-commander-stripprefix"
+      - "traefik.http.middlewares.redis-commander-stripprefix.stripprefix.prefixes=/redis-commander"
+    networks:
+      - base_network
+
 networks:
   base_network:
     driver: bridge 
