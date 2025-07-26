@@ -10,15 +10,12 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/BASE/volumes/Backend/traefik_data:/letsencrypt
     command:
       - --api.insecure=true
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=base_network
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --log.level=DEBUG
+      - --log.level=INFO
     networks:
       - base_network
 
@@ -32,7 +29,6 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-      - "traefik.http.services.frontend.loadbalancer.server.scheme=http"
     networks:
       - base_network
 
@@ -55,7 +51,6 @@ services:
       - "traefik.http.routers.backend.rule=Host(`10.10.255.111`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
-      - "traefik.http.services.backend.loadbalancer.server.scheme=http"
     networks:
       - base_network
 
@@ -72,7 +67,6 @@ services:
       - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.rabbitmq.entrypoints=web"
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
-      - "traefik.http.services.rabbitmq.loadbalancer.server.scheme=http"
       - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
       - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
     networks:
