@@ -1,0 +1,167 @@
+version: '3.9'
+services:
+  traefik:
+    image: traefik:v3.4
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.myresolver.acme.email=base@itfact.com.br
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Painel Traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.middlewares=traefik-stripprefix"
+      - "traefik.http.middlewares.traefik-stripprefix.stripprefix.prefixes=/traefik"
+
+  grafana:
+    image: grafana/grafana:latest
+    user: "472:472"
+    volumes:
+      - /var/lib/docker/BASE/volumes/grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=BASE
+      - GF_SECURITY_ADMIN_PASSWORD=BASE
+    depends_on:
+      - loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3001"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
+      - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
+
+  loki:
+    image: grafana/loki:latest
+    user: "1000:1000"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - /var/lib/docker/BASE/volumes/loki_data:/loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=PathPrefix(`/loki`)"
+      - "traefik.http.routers.loki.entrypoints=websecure"
+      - "traefik.http.routers.loki.tls.certresolver=myresolver"
+      - "traefik.http.services.loki.loadbalancer.server.port=3101"
+      - "traefik.http.routers.loki.middlewares=loki-stripprefix"
+      - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port 3000"
+    environment:
+      - VITE_API_URL=https://10.10.255.111/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
+      - backend
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      - DEBUG=False
+      - BACKEND_CORS_ORIGINS=https://10.10.255.111
+      - DBHOST=db
+      - DBNAME=BASE
+      - DBUSER=BASE
+      - DBPASSWORD=BASE
+      - DBSCHEMA=BASE
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=BASE
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_DEFAULT_USER=BASE
+      - RABBITMQ_DEFAULT_PASS=BASE
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    depends_on:
+      - traefik
+      - db
+      - redis
+      - rabbitmq
+
+  db:
+    image: postgres:17.5
+    environment:
+      - POSTGRES_USER=BASE
+      - POSTGRES_PASSWORD=BASE
+      - POSTGRES_DB=BASE
+    volumes:
+      - /var/lib/docker/BASE/volumes/pgsql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:8.0
+    environment:
+      - REDIS_PASSWORD=BASE
+    command: ["redis-server", "--requirepass", "BASE"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "BASE", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - /var/lib/docker/BASE/volumes/redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:4.1.2-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=BASE
+      - RABBITMQ_DEFAULT_PASS=BASE
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - /var/lib/docker/BASE/volumes/rabbitmq_data:/var/lib/rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq.tls.certresolver=myresolver"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+
+# Volumes são gerenciados diretamente nos caminhos /var/lib/docker/BASE/volumes/
+# Recomendado: backup regular deste diretório para segurança dos dados.
+# Firewall: mantenha abertas apenas as portas 80/443 para o público.
+# Logs: Loki integrado ao Grafana para centralização de logs. 
