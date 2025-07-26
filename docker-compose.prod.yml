@@ -25,7 +25,12 @@ services:
     environment:
       - VITE_API_URL=http://10.10.255.111/api
     ports:
-      - "3001:3000"
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     networks:
       - base_network
 
@@ -45,6 +50,11 @@ services:
       - BACKEND_CORS_ORIGINS=http://10.10.255.111
     ports:
       - "8001:8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`10.10.255.111`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
     networks:
       - base_network
 
@@ -58,6 +68,13 @@ services:
       - RABBITMQ_DEFAULT_PASS=BASE
     ports:
       - "15673:15672"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
     networks:
       - base_network
 
