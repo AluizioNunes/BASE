@@ -149,11 +149,12 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=BASE
       - N8N_BASIC_AUTH_PASSWORD=BASE
-      - N8N_HOST=10.10.255.111
+      - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=http://10.10.255.111/n8n/
       - GENERIC_TIMEZONE=America/Manaus
+      - N8N_LOG_LEVEL=info
     volumes:
       - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
     labels:
@@ -184,6 +185,13 @@ services:
       - REDIS_PASSWORD=BASE
       - RAILS_ENV=production
       - NODE_ENV=production
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - WEBPACKER_DEV_SERVER_PORT=3036
+      - WEBPACKER_DEV_SERVER_PUBLIC=10.10.255.111:3036
+      - WEBPACKER_DEV_SERVER_HTTPS=false
+      - WEBPACKER_DEV_SERVER_INLINE=true
+      - WEBPACKER_DEV_SERVER_HOT=true
+      - WEBPACKER_DEV_SERVER_DISABLE_HOST_CHECK=true
     volumes:
       - /var/lib/docker/BASE/volumes/chatwoot_data:/app/storage
     labels:
