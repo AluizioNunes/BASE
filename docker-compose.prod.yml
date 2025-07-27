@@ -141,7 +141,7 @@ services:
       - base_network
 
   n8n:
-    image: n8nio/n8n:latest
+    image: docker.n8n.io/n8nio/n8n
     restart: unless-stopped
     ports:
       - "5678:5678"
@@ -160,12 +160,11 @@ services:
       - N8N_EDITOR_BASE_URL=http://10.10.255.111:5678/
     volumes:
       - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
-    command: ["n8n", "start"]
     networks:
       - base_network
 
   chatwoot:
-    image: chatwoot/chatwoot:v3.0.0
+    image: chatwoot/chatwoot:v4.4.0-ce
     restart: unless-stopped
     ports:
       - "3020:3000"
