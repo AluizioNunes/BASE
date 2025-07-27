@@ -112,16 +112,6 @@ services:
       - GF_SECURITY_ADMIN_USER=BASE
       - GF_SECURITY_ADMIN_PASSWORD=BASE
       - GF_SERVER_HTTP_PORT=3010
-      - GF_SERVER_ROOT_URL=http://10.10.255.111/grafana
-      - GF_SERVER_SERVE_FROM_SUB_PATH=false
-      - GF_AUTH_PROXY_ENABLED=true
-      - GF_AUTH_PROXY_HEADER_NAME=X-WEBAUTH-USER
-      - GF_AUTH_PROXY_HEADER_PROPERTY=username
-      - GF_AUTH_PROXY_AUTO_SIGN_UP=true
-      - GF_AUTH_DISABLE_LOGIN_FORM=false
-      - GF_SECURITY_COOKIE_SECURE=false
-      - GF_SECURITY_COOKIE_SAMESITE=disabled
-      - GF_SECURITY_ALLOW_EMBEDDING=true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`10.10.255.111`) && PathPrefix(`/grafana`)"
@@ -129,8 +119,6 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3010"
       - "traefik.http.routers.grafana.middlewares=grafana-stripprefix"
       - "traefik.http.middlewares.grafana-stripprefix.stripprefix.prefixes=/grafana"
-      - "traefik.http.middlewares.grafana-headers.headers.customrequestheaders.X-WEBAUTH-USER=BASE"
-      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix,grafana-headers"
       - "traefik.http.routers.grafana.priority=10"
     networks:
       - base_network
@@ -151,6 +139,66 @@ services:
       - "traefik.http.routers.loki.priority=10"
     networks:
       - base_network
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=BASE
+      - N8N_BASIC_AUTH_PASSWORD=BASE
+      - N8N_HOST=10.10.255.111
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://10.10.255.111/n8n/
+      - GENERIC_TIMEZONE=America/Manaus
+    volumes:
+      - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`10.10.255.111`) && PathPrefix(`/n8n`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      - "traefik.http.routers.n8n.middlewares=n8n-stripprefix"
+      - "traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/n8n"
+      - "traefik.http.routers.n8n.priority=10"
+    networks:
+      - base_network
+
+  chatwoot:
+    image: chatwoot/chatwoot:latest-ce
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - INSTALLATION_NAME=BASE
+      - SECRET_KEY_BASE=your-secret-key-base-here
+      - FRONTEND_URL=http://10.10.255.111/chatwoot
+      - POSTGRES_HOST=db
+      - POSTGRES_USERNAME=BASE
+      - POSTGRES_PASSWORD=BASE
+      - POSTGRES_DATABASE=chatwoot
+      - REDIS_URL=redis://redis:6379/1
+      - REDIS_PASSWORD=BASE
+      - RAILS_ENV=production
+      - NODE_ENV=production
+    volumes:
+      - /var/lib/docker/BASE/volumes/chatwoot_data:/app/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chatwoot.rule=Host(`10.10.255.111`) && PathPrefix(`/chatwoot`)"
+      - "traefik.http.routers.chatwoot.entrypoints=web"
+      - "traefik.http.services.chatwoot.loadbalancer.server.port=3000"
+      - "traefik.http.routers.chatwoot.middlewares=chatwoot-stripprefix"
+      - "traefik.http.middlewares.chatwoot-stripprefix.stripprefix.prefixes=/chatwoot"
+      - "traefik.http.routers.chatwoot.priority=10"
+    networks:
+      - base_network
+    depends_on:
+      - db
+      - redis
 
 networks:
   base_network:
