@@ -150,14 +150,22 @@ services:
       - N8N_BASIC_AUTH_USER=BASE
       - N8N_BASIC_AUTH_PASSWORD=BASE
       - N8N_ENCRYPTION_KEY=your-encryption-key-here
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_LOG_LEVEL=info
+      - N8N_USER_MANAGEMENT_DISABLED=false
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_WEBHOOK_URL=http://10.10.255.111:5678/
+      - N8N_EDITOR_BASE_URL=http://10.10.255.111:5678/
     volumes:
       - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
-    command: n8n start
+    command: ["n8n", "start"]
     networks:
       - base_network
 
   chatwoot:
-    image: chatwoot/chatwoot:latest-ce
+    image: chatwoot/chatwoot:v3.0.0
     restart: unless-stopped
     ports:
       - "3020:3000"
@@ -168,14 +176,21 @@ services:
       - POSTGRES_USERNAME=BASE
       - POSTGRES_PASSWORD=BASE
       - POSTGRES_DATABASE=chatwoot
+      - POSTGRES_PORT=5432
       - REDIS_URL=redis://redis:6379/1
       - REDIS_PASSWORD=BASE
       - RAILS_ENV=production
       - NODE_ENV=production
       - FRONTEND_URL=http://10.10.255.111:3020
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - WEBPACKER_DEV_SERVER_PORT=3036
+      - WEBPACKER_DEV_SERVER_PUBLIC=10.10.255.111:3036
+      - WEBPACKER_DEV_SERVER_HTTPS=false
+      - WEBPACKER_DEV_SERVER_INLINE=true
+      - WEBPACKER_DEV_SERVER_HOT=true
+      - WEBPACKER_DEV_SERVER_DISABLE_HOST_CHECK=true
     volumes:
       - /var/lib/docker/BASE/volumes/chatwoot_data:/app/storage
-    command: bundle exec rails s -p 3000 -b 0.0.0.0
     networks:
       - base_network
     depends_on:
