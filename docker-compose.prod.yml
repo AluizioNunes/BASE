@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && !PathPrefix(`/api`, `/grafana`, `/rabbitmq`, `/loki`)"
+      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && !PathPrefix(`/api`, `/grafana`, `/rabbitmq`, `/loki`, `/n8n`, `/chatwoot`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.frontend.priority=1"
@@ -160,6 +160,14 @@ services:
       - N8N_EDITOR_BASE_URL=http://10.10.255.111:5678/
     volumes:
       - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`10.10.255.111`) && PathPrefix(`/n8n`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      - "traefik.http.routers.n8n.middlewares=n8n-stripprefix"
+      - "traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/n8n"
+      - "traefik.http.routers.n8n.priority=10"
     networks:
       - base_network
 
@@ -174,8 +182,9 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_USERNAME=BASE
       - POSTGRES_PASSWORD=BASE
-      - POSTGRES_DATABASE=chatwoot
+      - POSTGRES_DATABASE=CHATWOOT
       - POSTGRES_PORT=5432
+      - POSTGRES_SCHEMA=BASE
       - REDIS_URL=redis://redis:6379/1
       - REDIS_PASSWORD=BASE
       - RAILS_ENV=production
@@ -190,6 +199,14 @@ services:
       - WEBPACKER_DEV_SERVER_DISABLE_HOST_CHECK=true
     volumes:
       - /var/lib/docker/BASE/volumes/chatwoot_data:/app/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chatwoot.rule=Host(`10.10.255.111`) && PathPrefix(`/chatwoot`)"
+      - "traefik.http.routers.chatwoot.entrypoints=web"
+      - "traefik.http.services.chatwoot.loadbalancer.server.port=3000"
+      - "traefik.http.routers.chatwoot.middlewares=chatwoot-stripprefix"
+      - "traefik.http.middlewares.chatwoot-stripprefix.stripprefix.prefixes=/chatwoot"
+      - "traefik.http.routers.chatwoot.priority=10"
     networks:
       - base_network
     depends_on:
