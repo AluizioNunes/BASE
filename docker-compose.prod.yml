@@ -171,7 +171,7 @@ services:
     image: chatwoot/chatwoot:latest-ce
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "3020:3000"
     environment:
       - INSTALLATION_NAME=BASE
       - SECRET_KEY_BASE=your-secret-key-base-here
