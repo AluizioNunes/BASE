@@ -149,8 +149,10 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=BASE
       - N8N_BASIC_AUTH_PASSWORD=BASE
+      - N8N_ENCRYPTION_KEY=your-encryption-key-here
     volumes:
       - /var/lib/docker/BASE/volumes/n8n_data:/home/node/.n8n
+    command: n8n start
     networks:
       - base_network
 
@@ -170,8 +172,10 @@ services:
       - REDIS_PASSWORD=BASE
       - RAILS_ENV=production
       - NODE_ENV=production
+      - FRONTEND_URL=http://10.10.255.111:3020
     volumes:
       - /var/lib/docker/BASE/volumes/chatwoot_data:/app/storage
+    command: bundle exec rails s -p 3000 -b 0.0.0.0
     networks:
       - base_network
     depends_on:
