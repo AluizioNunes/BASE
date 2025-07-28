@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && !PathPrefix(`/api`, `/grafana`, `/rabbitmq`, `/loki`)"
+      - "traefik.http.routers.frontend.rule=Host(`10.10.255.111`) && !PathPrefix(`/api`) && !PathPrefix(`/grafana`) && !PathPrefix(`/rabbitmq`) && !PathPrefix(`/loki`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.frontend.priority=1"
