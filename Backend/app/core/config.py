@@ -1,7 +1,8 @@
 from pydantic_settings import BaseSettings
-from pydantic import AnyUrl, validator
-from typing import Optional, List
+from pydantic import AnyUrl, validator, field_validator
+from typing import Optional, List, Union
 import os
+import json
 
 class Settings(BaseSettings):
     # Configurações da Aplicação
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 horas
     
     # Configurações de CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: str = "http://localhost:3000"
     
     # Configurações do Redis
     REDIS_HOST: str = "redis"
@@ -54,25 +55,38 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_SECRET: str = ""
     GITHUB_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/github/callback"
     
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v):
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
+    @property
+    def CORS_ORIGINS(self) -> List[str]:
+        """Retorna a lista de origens CORS"""
+        if isinstance(self.BACKEND_CORS_ORIGINS, str):
+            return [i.strip() for i in self.BACKEND_CORS_ORIGINS.split(",") if i.strip()]
+        elif isinstance(self.BACKEND_CORS_ORIGINS, list):
+            return self.BACKEND_CORS_ORIGINS
+        else:
+            return ["http://localhost:3000"]
+    
+    @field_validator("ALLOWED_EXTENSIONS", mode="before")
+    @classmethod
+    def assemble_allowed_extensions(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str):
+            # Se for uma string, divide por vírgula
+            return [i.strip() for i in v.split(",") if i.strip()]
         elif isinstance(v, list):
             return v
-        elif isinstance(v, str) and v.startswith("["):
-            # Se for uma string que representa uma lista
-            import ast
-            try:
-                return ast.literal_eval(v)
-            except:
-                return [v]
-        raise ValueError(f"Invalid CORS origins format: {v}")
+        else:
+            return [str(v)]
     
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'
         case_sensitive = True
+        # Configurações para evitar problemas com parsing JSON
+        json_schema_extra = {
+            "example": {
+                "BACKEND_CORS_ORIGINS": "http://localhost:3000,http://10.10.255.111",
+                "ALLOWED_EXTENSIONS": ".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
+            }
+        }
 
 # Instância global de configurações
 settings = Settings()

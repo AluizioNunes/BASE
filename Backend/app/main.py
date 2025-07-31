@@ -38,7 +38,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],  # Em produção, restrinja para ["GET", "POST", "PUT", "DELETE"]
     allow_headers=["*"],  # Em produção, restrinja os cabeçalhos necessários
