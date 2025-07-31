@@ -139,7 +139,7 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     environment:
       - DEBUG=False
-      - BACKEND_CORS_ORIGINS=https://10.10.255.111
+      - BACKEND_CORS_ORIGINS=https://10.10.255.111,http://localhost:3000
       - DBHOST=db
       - DBNAME=BASE
       - DBUSER=BASE

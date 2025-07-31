@@ -12,7 +12,7 @@ services:
       - ./Backend:/app
     environment:
       - DEBUG=True
-      - BACKEND_CORS_ORIGINS=http://10.10.255.111
+      - BACKEND_CORS_ORIGINS=http://10.10.255.111,http://localhost:3000
       - DBHOST=db
       - DBNAME=BASE
       - DBUSER=BASE

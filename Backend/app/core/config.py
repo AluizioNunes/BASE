@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 horas
     
     # Configurações de CORS
-    BACKEND_CORS_ORIGINS: str = "http://localhost:3000"
+    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
     
     # Configurações do Redis
     REDIS_HOST: str = "redis"
@@ -58,9 +58,16 @@ class Settings(BaseSettings):
     def assemble_cors_origins(cls, v):
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
+        elif isinstance(v, list):
             return v
-        raise ValueError(v)
+        elif isinstance(v, str) and v.startswith("["):
+            # Se for uma string que representa uma lista
+            import ast
+            try:
+                return ast.literal_eval(v)
+            except:
+                return [v]
+        raise ValueError(f"Invalid CORS origins format: {v}")
     
     class Config:
         env_file = ".env"

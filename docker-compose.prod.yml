@@ -48,7 +48,7 @@ services:
       - DBUSER=BASE
       - DBPASSWORD=BASE
       - DBSCHEMA=BASE
-      - BACKEND_CORS_ORIGINS=http://10.10.255.111
+      - BACKEND_CORS_ORIGINS=http://10.10.255.111,http://localhost:3000
     ports:
       - "8001:8000"
     labels:
