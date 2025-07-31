@@ -70,6 +70,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=BASE
     ports:
       - "15673:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rabbitmq.rule=Host(`10.10.255.111`) && PathPrefix(`/rabbitmq`)"
@@ -90,6 +95,11 @@ services:
       - POSTGRES_USER=BASE
       - POSTGRES_PASSWORD=BASE
       - POSTGRES_SCHEMA=BASE
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U BASE -d BASE"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - base_network
 
@@ -98,6 +108,11 @@ services:
     command: redis-server --requirepass BASE
     volumes:
       - /var/lib/docker/BASE/volumes/redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - base_network
 

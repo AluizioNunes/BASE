@@ -19,3 +19,7 @@ pydantic-settings
 python-multipart
 passlib[bcrypt]
 python-jose
+httpx
+authlib
+itsdangerous
+elastic-apm

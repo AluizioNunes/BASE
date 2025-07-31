@@ -1,14 +1,19 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-import logging
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 
 from .core.config import settings
 from app.core.monitoring import setup_monitoring
 from app.core.logging_config import logger
 
-# Configuração do logger
-# logger = logging.getLogger(__name__) # This line is now redundant as logger is imported directly
+
+
+# Configuração do Rate Limiter
+limiter = Limiter(key_func=get_remote_address)
 
 # Cria a aplicação FastAPI
 app = FastAPI(
@@ -20,6 +25,10 @@ app = FastAPI(
     redoc_url="/redoc",  # Habilita o ReDoc em /redoc
     openapi_url="/openapi.json"  # URL para o esquema OpenAPI
 )
+
+# Configura o rate limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 logger.info("API inicializada com sucesso!")
 
