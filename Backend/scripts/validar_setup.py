@@ -72,7 +72,7 @@ def validar_tabela_usuarios():
             cursor.execute("""
                 SELECT EXISTS (
                     SELECT FROM information_schema.tables 
-                    WHERE table_name = 'USUARIOS'
+                    WHERE LOWER(table_name) = LOWER('USUARIOS')
                 );
             """)
             
