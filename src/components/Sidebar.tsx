@@ -8,6 +8,9 @@ import {
   ShoppingOutlined,
   FileTextOutlined,
   SyncOutlined,
+  TeamOutlined,
+  BarChartOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -36,6 +39,10 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
           style={{ height: '100%', borderRight: 0, fontWeight: 600, fontSize: 16 }}
           onClick={({ key }) => {
             if (key === 'painel') navigate('/');
+            if (key === 'dashboard-financeiro') navigate('/dashboard/financeiro');
+            if (key === 'dashboard-vendas') navigate('/dashboard/vendas');
+            if (key === 'dashboard-clientes') navigate('/dashboard/clientes');
+            if (key === 'dashboard-operacional') navigate('/dashboard/operacional');
             if (key === 'cadastros') navigate('/cadastros');
             if (key === 'financeiro') navigate('/financeiro');
             if (key === 'estoque') navigate('/estoque');
@@ -47,8 +54,29 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
           }}
         >
           <Menu.Item key="painel" icon={<DashboardOutlined style={{ fontSize: 24, marginRight: 16 }} />}>
-            <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>PAINEL</motion.div>
+            <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>PAINEL GERAL</motion.div>
           </Menu.Item>
+          
+          {/* Submenu de Dashboards Específicos */}
+          <Menu.SubMenu 
+            key="dashboards" 
+            icon={<BarChartOutlined style={{ fontSize: 24, marginRight: 16 }} />} 
+            title={<motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>DASHBOARDS</motion.div>}
+          >
+            <Menu.Item key="dashboard-financeiro" icon={<DollarOutlined style={{ fontSize: 18, marginRight: 12 }} />}>
+              <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>Financeiro</motion.div>
+            </Menu.Item>
+            <Menu.Item key="dashboard-vendas" icon={<ShoppingOutlined style={{ fontSize: 18, marginRight: 12 }} />}>
+              <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>Vendas</motion.div>
+            </Menu.Item>
+            <Menu.Item key="dashboard-clientes" icon={<TeamOutlined style={{ fontSize: 18, marginRight: 12 }} />}>
+              <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>Clientes</motion.div>
+            </Menu.Item>
+            <Menu.Item key="dashboard-operacional" icon={<ToolOutlined style={{ fontSize: 18, marginRight: 12 }} />}>
+              <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>Operacional</motion.div>
+            </Menu.Item>
+          </Menu.SubMenu>
+
           <Menu.Item key="cadastros" icon={<UserAddOutlined style={{ fontSize: 24, marginRight: 16 }} />}>
             <motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>CADASTROS</motion.div>
           </Menu.Item>

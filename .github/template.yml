@@ -45,8 +45,6 @@ template:
     - ".env.local"
     - ".env.production"
     - "*.log"
-    - "*.sqlite3"
-    - "*.db"
     - "coverage/"
     - "dist/"
     - ".DS_Store"

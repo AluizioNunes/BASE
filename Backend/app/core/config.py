@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     
-    # Configurações do Banco de Dados
-    DATABASE_URL: str = "postgresql://BASE:BASE@db:5432/BASE"
+    # Configurações do Banco de Dados - PostgreSQL no servidor Docker
+    DATABASE_URL: str = "postgresql+psycopg://BASE:BASE@10.10.255.111:5432/BASE"
     SQLALCHEMY_LOG_LEVEL: str = "INFO"
     
     # Configurações de Autenticação JWT

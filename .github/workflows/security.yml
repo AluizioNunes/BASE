@@ -1,0 +1,272 @@
+name: Security Analysis
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Toda segunda-feira às 2h
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ========================================
+  # DEPENDENCY SCAN
+  # ========================================
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run npm audit
+      run: npm audit --audit-level=moderate
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install Python dependencies
+      working-directory: ./Backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety
+        
+    - name: Run safety check
+      working-directory: ./Backend
+      run: safety check --json --output safety-report.json || true
+      
+    - name: Upload safety report
+      uses: actions/upload-artifact@v4
+      with:
+        name: safety-report
+        path: Backend/safety-report.json
+        retention-days: 30
+
+  # ========================================
+  # CODE QUALITY
+  # ========================================
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: npm run lint
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install Python dependencies
+      working-directory: ./Backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort bandit
+        
+    - name: Run flake8
+      working-directory: ./Backend
+      run: flake8 app/ --max-line-length=88 --extend-ignore=E203,W503
+      
+    - name: Run black check
+      working-directory: ./Backend
+      run: black --check app/
+      
+    - name: Run isort check
+      working-directory: ./Backend
+      run: isort --check-only app/
+      
+    - name: Run bandit security check
+      working-directory: ./Backend
+      run: bandit -r app/ -f json -o bandit-report.json || true
+      
+    - name: Upload bandit report
+      uses: actions/upload-artifact@v4
+      with:
+        name: bandit-report
+        path: Backend/bandit-report.json
+        retention-days: 30
+
+  # ========================================
+  # CONTAINER SCAN
+  # ========================================
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # ========================================
+  # SECRETS SCAN
+  # ========================================
+  secrets-scan:
+    name: Secrets Detection
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Run TruffleHog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        args: --only-verified --format json --output trufflehog-results.json
+        path: .
+        
+    - name: Upload TruffleHog results
+      uses: actions/upload-artifact@v4
+      with:
+        name: trufflehog-results
+        path: trufflehog-results.json
+        retention-days: 30
+
+  # ========================================
+  # SAST ANALYSIS
+  # ========================================
+  sast-analysis:
+    name: SAST Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript, python
+        
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+      
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript"
+        category: "/language:python"
+
+  # ========================================
+  # COMPLIANCE CHECK
+  # ========================================
+  compliance-check:
+    name: Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for license file
+      run: |
+        if [ ! -f "LICENSE" ]; then
+          echo "❌ LICENSE file not found"
+          exit 1
+        fi
+        echo "✅ LICENSE file found"
+        
+    - name: Check for security policy
+      run: |
+        if [ ! -f ".github/SECURITY.md" ]; then
+          echo "⚠️ SECURITY.md not found - creating template"
+          mkdir -p .github
+          cat > .github/SECURITY.md << 'EOF'
+          # Security Policy
+          
+          ## Supported Versions
+          
+          | Version | Supported          |
+          | ------- | ------------------ |
+          | 1.x.x   | :white_check_mark: |
+          
+          ## Reporting a Vulnerability
+          
+          Please report vulnerabilities to security@example.com
+          EOF
+        else
+          echo "✅ SECURITY.md found"
+        fi
+        
+    - name: Check for contributing guidelines
+      run: |
+        if [ ! -f "CONTRIBUTING.md" ]; then
+          echo "⚠️ CONTRIBUTING.md not found"
+        else
+          echo "✅ CONTRIBUTING.md found"
+        fi
+
+  # ========================================
+  # SECURITY SUMMARY
+  # ========================================
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, code-quality, container-scan, secrets-scan, sast-analysis, compliance-check]
+    if: always()
+    
+    steps:
+    - name: Generate security summary
+      run: |
+        echo "🔒 Security Analysis Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Jobs Status:" >> $GITHUB_STEP_SUMMARY
+        echo "- Dependency Scan: ${{ needs.dependency-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Code Quality: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Container Scan: ${{ needs.container-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Secrets Scan: ${{ needs.secrets-scan.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- SAST Analysis: ${{ needs.sast-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Compliance Check: ${{ needs.compliance-check.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.dependency-scan.result }}" == "success" && 
+              "${{ needs.code-quality.result }}" == "success" && 
+              "${{ needs.container-scan.result }}" == "success" && 
+              "${{ needs.secrets-scan.result }}" == "success" && 
+              "${{ needs.sast-analysis.result }}" == "success" && 
+              "${{ needs.compliance-check.result }}" == "success" ]]; then
+          echo "✅ All security checks passed!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Some security checks failed. Please review the logs." >> $GITHUB_STEP_SUMMARY
+        fi 

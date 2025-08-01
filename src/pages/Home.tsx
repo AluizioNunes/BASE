@@ -3,6 +3,7 @@ import { Card, Row, Col, Select } from 'antd';
 import { DollarOutlined, TeamOutlined, ShoppingOutlined, UserAddOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
+import DashboardOverview from '../components/DashboardOverview';
 
 const canais = ['Todos', 'Online', 'Loja Física', 'Marketplace', 'Representantes'];
 const meses = ['Todos', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'];
@@ -125,8 +126,9 @@ export default function Home() {
 
   return (
     <div>
-      <div style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}>Painel</div>
+      <div style={{ fontSize: 28, fontWeight: 700, marginBottom: 4 }}>Painel Geral</div>
       <div style={{ color: '#888', marginBottom: 32 }}>Bem-vindo de volta, Renata F. ! Aqui está um resumo do seu negócio.</div>
+      
       {/* Cards de resumo */}
       <Row gutter={24} style={{ marginBottom: 32 }}>
         {cardsResumo.map((card, idx) => (
@@ -151,6 +153,10 @@ export default function Home() {
           </Col>
         ))}
       </Row>
+
+      {/* Dashboard Overview */}
+      <DashboardOverview />
+
       {/* Filtros dinâmicos */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
         <Select value={canal} onChange={setCanal} style={{ width: 180 }}>

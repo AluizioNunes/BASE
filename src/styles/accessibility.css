@@ -1,0 +1,647 @@
+/* ========================================
+   ESTILOS DE ACESSIBILIDADE WCAG 2.1
+   ======================================== */
+
+/* 1. MELHORIAS DE CONTRASTE */
+
+/* Contraste melhorado para texto */
+body {
+  color: #262626;
+  background-color: #ffffff;
+  line-height: 1.6;
+}
+
+/* Links com contraste adequado */
+a {
+  color: #1890ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover,
+a:focus {
+  color: #40a9ff;
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: #722ed1;
+}
+
+/* Botões com contraste melhorado */
+button,
+.btn {
+  color: #ffffff;
+  background-color: #1890ff;
+  border: 2px solid #1890ff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+button:hover,
+button:focus,
+.btn:hover,
+.btn:focus {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+button:active,
+.btn:active {
+  background-color: #096dd9;
+  border-color: #096dd9;
+}
+
+/* Botões secundários */
+button.secondary,
+.btn-secondary {
+  color: #1890ff;
+  background-color: #ffffff;
+  border: 2px solid #1890ff;
+}
+
+button.secondary:hover,
+button.secondary:focus,
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #f0f8ff;
+  border-color: #40a9ff;
+}
+
+/* 2. INDICADORES DE FOCO VISÍVEIS */
+
+/* Foco visível para todos os elementos interativos */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+[tabindex]:focus {
+  outline: 2px solid #1890ff !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* Foco para elementos sem borda */
+button:focus,
+.btn:focus {
+  outline: 2px solid #1890ff !important;
+  outline-offset: 2px !important;
+}
+
+/* 3. MELHORIAS DE TAMANHO E ESPAÇAMENTO */
+
+/* Tamanho mínimo para elementos clicáveis */
+button,
+.btn,
+a,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+}
+
+/* Espaçamento adequado entre elementos */
+.form-group,
+.form-item {
+  margin-bottom: 16px;
+}
+
+.form-group label,
+.form-item label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #262626;
+}
+
+/* 4. MELHORIAS DE TIPOGRAFIA */
+
+/* Tamanho de fonte adequado */
+body {
+  font-size: 16px;
+}
+
+/* Previne zoom em iOS */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* Espaçamento de linha adequado */
+p,
+div,
+span {
+  line-height: 1.6;
+}
+
+/* 5. ESTADOS DE ERRO E SUCESSO */
+
+/* Estados de erro */
+.error,
+.has-error {
+  color: #cf1322;
+  border-color: #ff4d4f;
+}
+
+.error-message {
+  color: #cf1322;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Estados de sucesso */
+.success,
+.has-success {
+  color: #389e0d;
+  border-color: #52c41a;
+}
+
+.success-message {
+  color: #389e0d;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* 6. MELHORIAS PARA LEITORES DE TELA */
+
+/* Classe para esconder conteúdo visualmente mas manter acessível */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Anúncios para leitores de tela */
+.sr-announce {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* 7. MELHORIAS DE NAVEGAÇÃO */
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #1890ff;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* 8. MELHORIAS DE FORMULÁRIOS */
+
+/* Labels obrigatórios */
+.required::after {
+  content: " *";
+  color: #cf1322;
+  font-weight: bold;
+}
+
+/* Campos obrigatórios */
+input[required],
+select[required],
+textarea[required] {
+  border-left: 3px solid #1890ff;
+}
+
+/* Campos com erro */
+input.error,
+select.error,
+textarea.error {
+  border-left: 3px solid #cf1322;
+}
+
+/* 9. MELHORIAS DE TABELAS */
+
+/* Tabelas acessíveis */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+th,
+td {
+  border: 1px solid #d9d9d9;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* 10. MELHORIAS DE LISTAS */
+
+/* Listas com marcadores visíveis */
+ul,
+ol {
+  padding-left: 24px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+/* 11. MELHORIAS DE IMAGENS */
+
+/* Imagens com alt text adequado */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 12. MELHORIAS DE ANIMAÇÕES */
+
+/* Respeita preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 13. MELHORIAS DE CONTRASTE ALTO */
+
+/* Suporte para modo de alto contraste */
+@media (prefers-contrast: high) {
+  body {
+    color: #000000;
+    background-color: #ffffff;
+  }
+  
+  button,
+  .btn {
+    color: #ffffff;
+    background-color: #000000;
+    border: 2px solid #000000;
+  }
+  
+  a {
+    color: #0000ff;
+    text-decoration: underline;
+  }
+  
+  input,
+  select,
+  textarea {
+    border: 2px solid #000000;
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
+/* 14. MELHORIAS DE TAMANHO DE TEXTO */
+
+/* Suporte para zoom de texto */
+@media (max-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+  
+  button,
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+    font-size: 18px;
+  }
+}
+
+/* 15. MELHORIAS DE CORES PARA DALTONISMO */
+
+/* Cores seguras para daltonismo */
+.error-color {
+  color: #cf1322;
+  background-color: #fff2f0;
+  border-color: #ffccc7;
+}
+
+.success-color {
+  color: #389e0d;
+  background-color: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.warning-color {
+  color: #d48806;
+  background-color: #fffbe6;
+  border-color: #ffe58f;
+}
+
+.info-color {
+  color: #1890ff;
+  background-color: #f0f8ff;
+  border-color: #91d5ff;
+}
+
+/* 16. MELHORIAS DE NAVEGAÇÃO POR TECLADO */
+
+/* Indicador de foco para navegação por teclado */
+.keyboard-nav:focus {
+  outline: 3px solid #1890ff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 17. MELHORIAS DE ESTRUTURA SEMÂNTICA */
+
+/* Melhora hierarquia de cabeçalhos */
+h1 {
+  font-size: 2em;
+  margin-bottom: 16px;
+  color: #262626;
+}
+
+h2 {
+  font-size: 1.5em;
+  margin-bottom: 12px;
+  color: #262626;
+}
+
+h3 {
+  font-size: 1.17em;
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+h4 {
+  font-size: 1em;
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+h5 {
+  font-size: 0.83em;
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+h6 {
+  font-size: 0.67em;
+  margin-bottom: 8px;
+  color: #262626;
+}
+
+/* 18. MELHORIAS DE LANDMARKS */
+
+/* Melhora navegação por landmarks */
+main {
+  outline: none;
+}
+
+nav {
+  outline: none;
+}
+
+aside {
+  outline: none;
+}
+
+/* 19. MELHORIAS DE ALERTAS */
+
+/* Alertas acessíveis */
+.alert {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+
+.alert-error {
+  background-color: #fff2f0;
+  border-color: #cf1322;
+  color: #cf1322;
+}
+
+.alert-success {
+  background-color: #f6ffed;
+  border-color: #389e0d;
+  color: #389e0d;
+}
+
+.alert-warning {
+  background-color: #fffbe6;
+  border-color: #d48806;
+  color: #d48806;
+}
+
+.alert-info {
+  background-color: #f0f8ff;
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+/* 20. MELHORIAS DE PROGRESSO */
+
+/* Indicadores de progresso acessíveis */
+.progress-bar {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 20px;
+}
+
+.progress-fill {
+  background-color: #1890ff;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* 21. MELHORIAS DE MODAIS */
+
+/* Modais acessíveis */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  margin: 50px auto;
+  position: relative;
+  outline: none;
+}
+
+/* 22. MELHORIAS DE TOOLTIPS */
+
+/* Tooltips acessíveis */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #262626;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.tooltip:hover .tooltip-content,
+.tooltip:focus .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 23. MELHORIAS DE CARREGAMENTO */
+
+/* Indicadores de carregamento acessíveis */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* 24. MELHORIAS DE PAGINAÇÃO */
+
+/* Paginação acessível */
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  gap: 8px;
+}
+
+.pagination-item {
+  display: inline-block;
+}
+
+.pagination-link {
+  display: block;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  color: #1890ff;
+  text-decoration: none;
+  min-width: 44px;
+  text-align: center;
+}
+
+.pagination-link:hover,
+.pagination-link:focus {
+  background-color: #f0f8ff;
+  border-color: #1890ff;
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.pagination-current {
+  background-color: #1890ff;
+  color: #ffffff;
+  border-color: #1890ff;
+}
+
+/* 25. MELHORIAS DE BREADCRUMBS */
+
+/* Breadcrumbs acessíveis */
+.breadcrumbs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  gap: 8px;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-link {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.breadcrumb-link:hover,
+.breadcrumb-link:focus {
+  text-decoration: underline;
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #8c8c8c;
+}
+
+.breadcrumb-current {
+  color: #262626;
+  font-weight: 500;
+} 
