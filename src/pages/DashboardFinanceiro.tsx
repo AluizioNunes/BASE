@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import { Card, Row, Col, Select, Statistic, Progress, Table, Tag } from 'antd';
+import { Card, Row, Col, Select, Progress, Table, Tag } from 'antd';
 import { 
   DollarOutlined, 
-  TrendingUpOutlined, 
-  TrendingDownOutlined,
   BankOutlined,
-  CreditCardOutlined,
-  WalletOutlined,
-  PieChartOutlined
+  WalletOutlined
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
@@ -162,7 +158,7 @@ export default function DashboardFinanceiro() {
     {
       title: 'Lucro Bruto',
       value: `R$ ${lucroTotal.toLocaleString()}`,
-      icon: <TrendingUpOutlined style={{ fontSize: 32, color: '#1890ff', opacity: 0.2 }} />,
+      icon: <DollarOutlined style={{ fontSize: 32, color: '#1890ff', opacity: 0.2 }} />,
       desc: 'Margem média',
       badge: `${margemMedia}%`,
       badgeColor: 'blue'

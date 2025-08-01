@@ -2,12 +2,8 @@ import { useState } from 'react';
 import { Card, Row, Col, Select, Progress, Table, Tag, Avatar } from 'antd';
 import { 
   ShoppingOutlined, 
-  UserOutlined, 
   TrophyOutlined,
-  RiseOutlined,
-  FallOutlined,
-  BarChartOutlined,
-  TeamOutlined
+  BarChartOutlined
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
@@ -268,7 +264,7 @@ export default function DashboardVendas() {
     {
       title: 'Receita Total',
       value: `R$ ${totalReceita.toLocaleString()}`,
-      icon: <RiseOutlined style={{ fontSize: 32, color: '#52c41a', opacity: 0.2 }} />,
+      icon: <ShoppingOutlined style={{ fontSize: 32, color: '#52c41a', opacity: 0.2 }} />,
       desc: 'Faturamento bruto',
       badge: '+18% vs ano anterior',
       badgeColor: 'green'

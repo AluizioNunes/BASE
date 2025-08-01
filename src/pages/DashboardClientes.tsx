@@ -1,14 +1,10 @@
 import { useState } from 'react';
-import { Card, Row, Col, Select, Progress, Table, Tag, Avatar, Rate } from 'antd';
+import { Card, Row, Col, Select, Progress, Table, Tag, Avatar } from 'antd';
 import { 
   UserOutlined, 
   HeartOutlined, 
   StarOutlined,
-  TeamOutlined,
-  DollarOutlined,
-  RiseOutlined,
-  FallOutlined,
-  CrownOutlined
+  DollarOutlined
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
@@ -61,7 +57,7 @@ export default function DashboardClientes() {
 
   // Cálculos de KPIs
   const totalClientes = dadosClientes.total[11];
-  const novosClientes = dadosClientes.novos.reduce((a, b) => a + b, 0);
+  // const novosClientes = dadosClientes.novos.reduce((a, b) => a + b, 0);
   const taxaRetencao = ((dadosClientes.ativos[11] / dadosClientes.total[11]) * 100).toFixed(1);
   const ltvMedio = (segmentacaoClientes.reduce((acc, seg) => acc + seg.ltv * seg.quantidade, 0) / totalClientes).toFixed(0);
   const crescimentoClientes = ((dadosClientes.total[11] - dadosClientes.total[0]) / dadosClientes.total[0] * 100).toFixed(1);

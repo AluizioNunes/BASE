@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, FormProps, FormItemProps, Input, InputProps, Select, SelectProps } from 'antd';
+import { Form, type FormProps, type FormItemProps, Input, type InputProps, Select, type SelectProps } from 'antd';
 import { motion } from 'framer-motion';
 
 interface AccessibleFormProps extends FormProps {
@@ -80,10 +80,10 @@ export const AccessibleForm: React.FC<AccessibleFormProps> = ({
           </div>
         )}
         
-        {children}
+        {children as React.ReactNode}
       </Form>
       
-      <style jsx>{`
+      <style>{`
         .accessible-form {
           max-width: 600px;
           margin: 0 auto;
@@ -194,7 +194,7 @@ export const AccessibleFormItem: React.FC<AccessibleFormItemProps> = ({
         </div>
       )}
       
-      {children}
+      {children as React.ReactNode}
       
       {helpText && (
         <div className="help-text">
@@ -202,7 +202,7 @@ export const AccessibleFormItem: React.FC<AccessibleFormItemProps> = ({
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         .accessible-form-item {
           margin-bottom: 24px;
         }
@@ -272,7 +272,7 @@ export const AccessibleInput: React.FC<AccessibleInputProps> = ({
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         .accessible-input-wrapper {
           position: relative;
         }
@@ -353,7 +353,7 @@ export const AccessibleSelect: React.FC<AccessibleSelectProps> = ({
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         .accessible-select-wrapper {
           position: relative;
         }

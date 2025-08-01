@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonProps } from 'antd';
+import { Button, type ButtonProps } from 'antd';
 import { motion } from 'framer-motion';
 
 interface AccessibleButtonProps extends ButtonProps {
@@ -44,7 +44,7 @@ const AccessibleButton: React.FC<AccessibleButtonProps> = ({
     'aria-expanded': props['aria-expanded'],
     'aria-haspopup': props['aria-haspopup'],
     'aria-controls': props['aria-controls'],
-    'aria-current': isNavigation ? 'page' : undefined,
+    'aria-current': isNavigation ? ('page' as const) : undefined,
     'role': props.role || (isNavigation ? 'button' : undefined),
     'tabIndex': disabled ? -1 : 0,
   };
@@ -109,7 +109,7 @@ const AccessibleButton: React.FC<AccessibleButtonProps> = ({
         </div>
       )}
       
-      <style jsx>{`
+      <style>{`
         .accessible-button {
           position: relative;
           transition: all 0.2s ease;

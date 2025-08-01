@@ -4,11 +4,7 @@ import {
   ShoppingOutlined, 
   CarOutlined, 
   ClockCircleOutlined,
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  BarChartOutlined,
-  TeamOutlined,
-  ToolOutlined
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
