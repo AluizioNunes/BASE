@@ -93,7 +93,7 @@ async def login_mfa(data: MFARequest, response: Response, request: Request):
     # Busca usuário
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT * FROM USUARIOS WHERE \"Email\" = :email"),
+            text("SELECT * FROM \"Usuarios\" WHERE \"Email\" = :email"),
             {"email": email}
         )
         user = result.fetchone()
@@ -189,7 +189,7 @@ async def refresh_token(data: RefreshTokenRequest, response: Response):
         # Verifica se usuário ainda existe
         with engine.connect() as conn:
             result = conn.execute(
-                text("SELECT COUNT(*) FROM USUARIOS WHERE \"Email\" = :email"),
+                text("SELECT COUNT(*) FROM \"Usuarios\" WHERE \"Email\" = :email"),
                 {"email": email}
             )
             if result.fetchone()[0] == 0:
