@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
     # Configurações do Banco de Dados
-    DB_HOST: str = os.getenv("DB_HOST", "10.10.255.111")
+    DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_PORT: str = os.getenv("DB_PORT", "5432")
     DB_NAME: str = os.getenv("DB_NAME", "BASE")
     DB_USER: str = os.getenv("DB_USER", "BASE")
@@ -92,7 +92,7 @@ class Settings(BaseSettings):
         # Configurações para evitar problemas com parsing JSON
         json_schema_extra = {
             "example": {
-                "BACKEND_CORS_ORIGINS": "http://localhost:3000,http://10.10.255.111",
+                "BACKEND_CORS_ORIGINS": "http://localhost:3000",
                 "ALLOWED_EXTENSIONS": ".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
             }
         }

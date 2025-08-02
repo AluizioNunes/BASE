@@ -54,6 +54,34 @@ async def read_root():
     """
     return {"message": f"Bem-vindo à {settings.APP_NAME}!"}
 
+# Endpoint de health check
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """
+    Endpoint de verificação de saúde da API.
+    
+    Retorna o status da aplicação.
+    """
+    return {
+        "status": "healthy",
+        "app_name": settings.APP_NAME,
+        "version": "0.1.0"
+    }
+
+# Endpoint de health check com prefixo /api
+@app.get("/api/health", tags=["Health"])
+async def api_health_check():
+    """
+    Endpoint de verificação de saúde da API com prefixo /api.
+    
+    Retorna o status da aplicação.
+    """
+    return {
+        "status": "healthy",
+        "app_name": settings.APP_NAME,
+        "version": "0.1.0"
+    }
+
 # Importa e inclui os roteadores dos módulos
 from app.modules.auth.routes import router as auth_router
 app.include_router(auth_router, prefix="/api/auth", tags=["Autenticação"])

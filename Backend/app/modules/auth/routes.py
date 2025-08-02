@@ -22,7 +22,8 @@ limiter = Limiter(key_func=get_remote_address)
 router = APIRouter()
 
 # Configuração do banco de dados
-engine = create_engine("postgresql+psycopg://BASE:BASE@10.10.255.111:5432/BASE")
+from app.core.config import settings
+engine = create_engine(settings.DATABASE_URL)
 
 @router.post("/login", response_model=LoginResponse)
 @limiter.limit("5/minute")
