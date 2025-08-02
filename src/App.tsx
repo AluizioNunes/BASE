@@ -32,28 +32,25 @@ const PageLoading = () => (
 
 export default function App() {
   const [appName, setAppName] = useState('BASE');
-  const [showWizard, setShowWizard] = useState(false);
   useEffect(() => {
     fetch(import.meta.env.VITE_API_URL + '/health')
       .then(res => res.json())
       .then(data => {
-        if (data && data.environment) setAppName(data.environment);
-        // Exemplo: se não houver configuração, mostrar wizard
-        if (data && data.status === 'setup_required') setShowWizard(true);
+        if (data && data.app_name) setAppName(data.app_name);
       })
-      .catch(() => setShowWizard(true));
+      .catch(() => {
+        // Se não conseguir conectar, mantém o nome padrão
+      });
   }, []);
-  if (showWizard) {
-    return <SetupWizard />;
-  }
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoading />}>
-        <div style={{padding: 8, fontWeight: 'bold'}}>{appName} | <Link to="/setup">Configuração Inicial</Link></div>
+        <div style={{padding: 8, fontWeight: 'bold'}}>{appName} | <Link to="/wizard">Configuração Inicial</Link></div>
         <Routes>
           {/* Rota pública de login */}
           <Route path="/login" element={<Login />} />
-          <Route path="/setup" element={<SetupWizard />} />
+          <Route path="/wizard" element={<SetupWizard />} />
+          <Route path="/setup" element={<SetupWizard />} /> {/* Mantido para compatibilidade */}
           {/* Rotas protegidas */}
           <Route path="/" element={
             <PrivateRoute>

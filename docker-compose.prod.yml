@@ -36,11 +36,30 @@ services:
     ports:
       - "3000:3000"
     labels:
+      # Rota principal do frontend (página inicial)
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`${SERVER_IP}`) && !PathPrefix(`/api`) && !PathPrefix(`/grafana`) && !PathPrefix(`/rabbitmq`) && !PathPrefix(`/loki`) && !PathPrefix(`/traefik`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend-main.rule=Host(`${SERVER_IP}`) && Path(`/`)"
+      - "traefik.http.routers.frontend-main.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-      - "traefik.http.routers.frontend.priority=1"
+      - "traefik.http.routers.frontend-main.priority=10"
+      
+      # Rota para o wizard de setup
+      - "traefik.http.routers.frontend-wizard.rule=Host(`${SERVER_IP}`) && PathPrefix(`/wizard`)"
+      - "traefik.http.routers.frontend-wizard.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend-wizard.priority=20"
+      
+      # Rota para login
+      - "traefik.http.routers.frontend-login.rule=Host(`${SERVER_IP}`) && PathPrefix(`/login`)"
+      - "traefik.http.routers.frontend-login.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend-login.priority=20"
+      
+      # Rota para outras páginas do frontend (fallback)
+      - "traefik.http.routers.frontend-other.rule=Host(`${SERVER_IP}`) && !PathPrefix(`/api`) && !PathPrefix(`/grafana`) && !PathPrefix(`/rabbitmq`) && !PathPrefix(`/loki`) && !PathPrefix(`/traefik`) && !PathPrefix(`/wizard`) && !PathPrefix(`/login`)"
+      - "traefik.http.routers.frontend-other.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend-other.priority=1"
     networks:
       - base_network
 
@@ -89,8 +108,8 @@ services:
       - "traefik.http.routers.rabbitmq.rule=Host(`${SERVER_IP}`) && PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.rabbitmq.entrypoints=web"
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
-      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
       - "traefik.http.routers.rabbitmq.middlewares=rabbitmq-stripprefix"
+      - "traefik.http.middlewares.rabbitmq-stripprefix.stripprefix.prefixes=/rabbitmq"
       - "traefik.http.routers.rabbitmq.priority=10"
     networks:
       - base_network
