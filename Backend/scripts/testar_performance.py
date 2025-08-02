@@ -125,30 +125,7 @@ def testar_transacocoes(conn):
 def comparar_com_psycopg2():
     """Compara com psycopg2 se disponível"""
     print("\n🆚 Comparando com psycopg2...")
-    
-    try:
-        import psycopg2
-        print("✅ psycopg2 encontrado - fazendo comparação")
-        
-        # Teste com psycopg2
-        config = {
-            'host': os.getenv('DBHOST', '10.10.255.111'),  # Servidor Docker
-            'port': os.getenv('DBPORT', '5432'),
-            'database': os.getenv('DBNAME', 'BASE'),  # psycopg2 usa 'database'
-            'user': os.getenv('DBUSER', 'BASE'),
-            'password': os.getenv('DBPASSWORD', 'BASE')
-        }
-        
-        start_time = time.time()
-        conn2 = psycopg2.connect(**config)
-        psycopg2_time = time.time() - start_time
-        
-        print(f"⏱️ psycopg2: {psycopg2_time:.3f} segundos")
-        
-        conn2.close()
-        
-    except ImportError:
-        print("⚠️ psycopg2 não encontrado - pulando comparação")
+    print("⚠️ psycopg2 não é mais suportado - usando apenas psycopg[binary]")
 
 def main():
     """Função principal"""

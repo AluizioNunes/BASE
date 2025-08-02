@@ -18,7 +18,7 @@ Esta pasta contém scripts utilitários para tarefas administrativas, importaç�
   - Execução do script SQL com performance otimizada
   - Verificação da estrutura criada
   - Validação dos dados de exemplo
-  - **40% mais rápido** que psycopg2
+  - **40% mais rápido** que versões antigas
 
 #### `executar_criar_usuarios.sh` (Linux/Mac)
 - **Descrição**: Script shell para executar a criação da tabela
@@ -164,7 +164,7 @@ Após criar a tabela:
 
 5. **Teste a performance**:
    ```bash
-   # Compare com psycopg2 se necessário
+   # Compare com versões antigas se necessário
    python3 -c "import psycopg; print('psycopg-binary funcionando!')"
    ```
 
