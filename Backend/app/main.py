@@ -56,9 +56,9 @@ async def read_root():
 
 # Importa e inclui os roteadores dos módulos
 from app.modules.auth.routes import router as auth_router
-app.include_router(auth_router, prefix="/api/v1/auth", tags=["Autenticação"])
+app.include_router(auth_router, prefix="/api/auth", tags=["Autenticação"])
 from app.modules.files.routes import router as files_router
-app.include_router(files_router, prefix="/api/v1/files", tags=["Arquivos"])
+app.include_router(files_router, prefix="/api/files", tags=["Arquivos"])
 
 # Middleware para log de requisições
 @app.middleware("http")
@@ -78,4 +78,4 @@ async def log_requests(request, call_next):
 
 setup_monitoring(app)
 
-# Documentação: todas as rotas devem ser versionadas usando /api/v1/
+# Documentação: todas as rotas devem ser versionadas usando /api/
