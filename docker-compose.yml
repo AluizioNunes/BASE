@@ -17,7 +17,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/BASE/volumes/traefik_data:/letsencrypt
+      - /var/lib/docker/${APP_NAME}/volumes/traefik_data:/letsencrypt
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:8080" ]
       interval: 30s
@@ -31,14 +31,14 @@ services:
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
       - ./Backend:/app
-      - /var/lib/docker/BASE/volumes/uploads_data:/app/uploads
+      - /var/lib/docker/${APP_NAME}/volumes/uploads_data:/app/uploads
     environment:
-      - DBHOST=db
-      - DBNAME=BASE
-      - DBUSER=BASE
-      - DBPASSWORD=BASE
-      - DBSCHEMA=BASE
-      - BACKEND_CORS_ORIGINS=http://10.10.255.111,http://localhost:3000
+      - DBHOST=${DB_HOST}
+      - DBNAME=${DB_NAME}
+      - DBUSER=${DB_USER}
+      - DBPASSWORD=${DB_PASSWORD}
+      - DBSCHEMA=${DB_SCHEMA}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
@@ -57,7 +57,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - VITE_API_URL=http://10.10.255.111/api
+      - VITE_API_URL=${VITE_API_URL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"

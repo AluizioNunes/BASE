@@ -1,8 +1,9 @@
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import BaseLayout from './layouts/BaseLayout';
 import PrivateRoute from './components/PrivateRoute';
+import SetupWizard from './pages/SetupWizard';
 
 // Lazy loading das páginas
 const Login = lazy(() => import('./pages/Login'));
@@ -30,13 +31,29 @@ const PageLoading = () => (
 );
 
 export default function App() {
+  const [appName, setAppName] = useState('BASE');
+  const [showWizard, setShowWizard] = useState(false);
+  useEffect(() => {
+    fetch(import.meta.env.VITE_API_URL + '/health')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.environment) setAppName(data.environment);
+        // Exemplo: se não houver configuração, mostrar wizard
+        if (data && data.status === 'setup_required') setShowWizard(true);
+      })
+      .catch(() => setShowWizard(true));
+  }, []);
+  if (showWizard) {
+    return <SetupWizard />;
+  }
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoading />}>
+        <div style={{padding: 8, fontWeight: 'bold'}}>{appName} | <Link to="/setup">Configuração Inicial</Link></div>
         <Routes>
           {/* Rota pública de login */}
           <Route path="/login" element={<Login />} />
-          
+          <Route path="/setup" element={<SetupWizard />} />
           {/* Rotas protegidas */}
           <Route path="/" element={
             <PrivateRoute>

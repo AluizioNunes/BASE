@@ -6,54 +6,63 @@ import json
 
 class Settings(BaseSettings):
     # Configurações da Aplicação
-    APP_NAME: str = "API Base"
-    DEBUG: bool = False
-    ENVIRONMENT: str = "development"
+    APP_NAME: str = os.getenv("APP_NAME", "BASE")
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
-    # Configurações do Banco de Dados - PostgreSQL no servidor Docker
-    DATABASE_URL: str = "postgresql+psycopg://BASE:BASE@10.10.255.111:5432/BASE"
-    SQLALCHEMY_LOG_LEVEL: str = "INFO"
+    # Configurações do Banco de Dados
+    DB_HOST: str = os.getenv("DB_HOST", "10.10.255.111")
+    DB_PORT: str = os.getenv("DB_PORT", "5432")
+    DB_NAME: str = os.getenv("DB_NAME", "BASE")
+    DB_USER: str = os.getenv("DB_USER", "BASE")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD", "BASE")
+    DB_SCHEMA: str = os.getenv("DB_SCHEMA", "BASE")
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+    SQLALCHEMY_LOG_LEVEL: str = os.getenv("SQLALCHEMY_LOG_LEVEL", "INFO")
     
     # Configurações de Autenticação JWT
-    SECRET_KEY: str = "BASE_SECRET_KEY_CHANGE_IN_PRODUCTION"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 horas
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "BASE_SECRET_KEY_CHANGE_IN_PRODUCTION")
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
     
     # Configurações de CORS
-    BACKEND_CORS_ORIGINS: str = "http://localhost:3000"
+    BACKEND_CORS_ORIGINS: str = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:3000")
     
     # Configurações do Redis
-    REDIS_HOST: str = "redis"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: str = "BASE"
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "redis")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
+    REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "BASE")
     
     # Configurações do RabbitMQ
-    RABBITMQ_HOST: str = "rabbitmq"
-    RABBITMQ_PORT: int = 5672
-    RABBITMQ_USER: str = "BASE"
-    RABBITMQ_PASSWORD: str = "BASE"
+    RABBITMQ_HOST: str = os.getenv("RABBITMQ_HOST", "rabbitmq")
+    RABBITMQ_PORT: int = int(os.getenv("RABBITMQ_PORT", "5672"))
+    RABBITMQ_USER: str = os.getenv("RABBITMQ_USER", "BASE")
+    RABBITMQ_PASSWORD: str = os.getenv("RABBITMQ_PASSWORD", "BASE")
     
     # Configurações do Sentry
-    SENTRY_DSN: Optional[str] = None
+    SENTRY_DSN: Optional[str] = os.getenv("SENTRY_DSN", None)
     
     # Configurações do Elastic APM
-    ELASTIC_APM_SERVER_URL: Optional[str] = None
-    ELASTIC_APM_SECRET_TOKEN: Optional[str] = None
+    ELASTIC_APM_SERVER_URL: Optional[str] = os.getenv("ELASTIC_APM_SERVER_URL", None)
+    ELASTIC_APM_SECRET_TOKEN: Optional[str] = os.getenv("ELASTIC_APM_SECRET_TOKEN", None)
     
     # Configurações de Upload
-    UPLOAD_DIR: str = "uploads"
-    MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
-    ALLOWED_EXTENSIONS: List[str] = [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx", ".xls", ".xlsx"]
+    UPLOAD_DIR: str = os.getenv("UPLOAD_DIR", "uploads")
+    MAX_FILE_SIZE: int = int(os.getenv("MAX_FILE_SIZE", str(10 * 1024 * 1024)))
+    ALLOWED_EXTENSIONS: List[str] = os.getenv("ALLOWED_EXTENSIONS", ".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx").split(",")
     
     # Configurações OAuth
-    GOOGLE_CLIENT_ID: str = ""
-    GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/google/callback"
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
+    GOOGLE_REDIRECT_URI: str = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/api/v1/auth/google/callback")
     
-    GITHUB_CLIENT_ID: str = ""
-    GITHUB_CLIENT_SECRET: str = ""
-    GITHUB_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/github/callback"
+    GITHUB_CLIENT_ID: str = os.getenv("GITHUB_CLIENT_ID", "")
+    GITHUB_CLIENT_SECRET: str = os.getenv("GITHUB_CLIENT_SECRET", "")
+    GITHUB_REDIRECT_URI: str = os.getenv("GITHUB_REDIRECT_URI", "http://localhost:8000/api/v1/auth/github/callback")
     
     @property
     def CORS_ORIGINS(self) -> List[str]:

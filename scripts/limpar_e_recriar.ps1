@@ -32,7 +32,7 @@ Write-Host "🔧 Traefik: http://10.10.255.111/traefik" -ForegroundColor Cyan
 Write-Host "🐰 RabbitMQ: http://10.10.255.111/rabbitmq" -ForegroundColor Cyan
 Write-Host "📈 Loki: http://10.10.255.111/loki" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "🔑 Credenciais:" -ForegroundColor Yellow
+Write-Host "Credenciais:" -ForegroundColor Yellow
 Write-Host "   - Usuário: ADMIN ou base@itfact.com.br" -ForegroundColor White
 Write-Host "   - Senha: ADMIN123" -ForegroundColor White
 Write-Host "   - Grafana: BASE/BASE" -ForegroundColor White

@@ -1,3 +1,21 @@
+# Backend - TEMPLATE BASE
+
+## Como customizar
+
+1. Copie `env.example` para `.env`
+2. Edite as variáveis de ambiente:
+   - APP_NAME, DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, etc.
+3. Rode o backend normalmente (via Docker Compose ou manual)
+
+## Variáveis de ambiente
+Veja o arquivo `env.example` para todas as opções e explicações.
+
+## Observações
+- Todas as referências a BASE e IP foram substituídas por variáveis.
+- Para criar um novo sistema, basta trocar o nome e IP no `.env`.
+
+---
+
 # Backend – FastAPI
 
 ## Stack

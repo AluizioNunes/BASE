@@ -1,5 +1,5 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, File, UploadFile, HTTPException, Depends, Request, status
+from fastapi.responses import FileResponse, JSONResponse
 from typing import List
 import os
 import uuid
@@ -140,3 +140,31 @@ async def delete_file(
     cache_delete(f"file_info_{filename}")
     
     return {"message": "Arquivo removido com sucesso"} 
+
+@router.get('/config', tags=["Configuração"])
+def get_config(request: Request):
+    # Mock: proteger por autenticação real depois
+    if not request.headers.get('x-admin', '') == 'true':
+        raise HTTPException(status_code=403, detail='Acesso restrito a administradores')
+    env_path = os.path.join(os.path.dirname(__file__), '../../../.env')
+    if not os.path.exists(env_path):
+        return JSONResponse({})
+    with open(env_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    config = {}
+    for line in content.splitlines():
+        if '=' in line:
+            k, v = line.split('=', 1)
+            config[k.strip()] = v.strip()
+    return config
+
+@router.put('/config', tags=["Configuração"])
+def put_config(request: Request, data: dict):
+    # Mock: proteger por autenticação real depois
+    if not request.headers.get('x-admin', '') == 'true':
+        raise HTTPException(status_code=403, detail='Acesso restrito a administradores')
+    env_path = os.path.join(os.path.dirname(__file__), '../../../.env')
+    lines = [f"{k}={v}" for k, v in data.items()]
+    with open(env_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines))
+    return {"success": True} 
