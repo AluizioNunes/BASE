@@ -2,8 +2,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import BaseLayout from './layouts/BaseLayout';
+import PrivateRoute from './components/PrivateRoute';
 
 // Lazy loading das páginas
+const Login = lazy(() => import('./pages/Login'));
 const Home = lazy(() => import('./pages/Home'));
 const Usuario = lazy(() => import('./pages/Usuario'));
 const Perfil = lazy(() => import('./pages/Perfil'));
@@ -30,22 +32,78 @@ const PageLoading = () => (
 export default function App() {
   return (
     <BrowserRouter>
-      <BaseLayout>
-        <Suspense fallback={<PageLoading />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/usuarios" element={<Usuario />} />
-            <Route path="/perfil" element={<Perfil />} />
-            <Route path="/permissao" element={<Permissao />} />
-            
-            {/* Novos Dashboards Específicos */}
-            <Route path="/dashboard/financeiro" element={<DashboardFinanceiro />} />
-            <Route path="/dashboard/vendas" element={<DashboardVendas />} />
-            <Route path="/dashboard/clientes" element={<DashboardClientes />} />
-            <Route path="/dashboard/operacional" element={<DashboardOperacional />} />
-          </Routes>
-        </Suspense>
-      </BaseLayout>
+      <Suspense fallback={<PageLoading />}>
+        <Routes>
+          {/* Rota pública de login */}
+          <Route path="/login" element={<Login />} />
+          
+          {/* Rotas protegidas */}
+          <Route path="/" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <Home />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/usuarios" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <Usuario />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/perfil" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <Perfil />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/permissao" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <Permissao />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          {/* Novos Dashboards Específicos */}
+          <Route path="/dashboard/financeiro" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <DashboardFinanceiro />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/dashboard/vendas" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <DashboardVendas />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/dashboard/clientes" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <DashboardClientes />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/dashboard/operacional" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <DashboardOperacional />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
