@@ -231,7 +231,7 @@ async def refresh_token(data: RefreshTokenRequest, response: Response):
 
 @router.post("/password/reset", response_model=PasswordResetResponse)
 @limiter.limit("3/hour")
-async def request_password_reset(data: PasswordResetRequest):
+async def request_password_reset(data: PasswordResetRequest, request: Request):
     """
     Solicita reset de senha
     """

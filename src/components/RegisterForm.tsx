@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, Button, Card, Alert, Typography, Space, Progress, Select } from 'antd';
+import { Form, Input, Button, Card, Alert, Typography, Space, Select } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
@@ -13,28 +13,9 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
-  const { register, validatePassword } = useAuth();
+  const { register } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [passwordValidation, setPasswordValidation] = useState<{
-    valid: boolean;
-    errors: string[];
-    warnings: string[];
-    score: number;
-  } | null>(null);
-
-  const handlePasswordChange = async (password: string) => {
-    if (password.length >= 8) {
-      try {
-        const validation = await validatePassword(password);
-        setPasswordValidation(validation);
-      } catch (err) {
-        console.error('Erro na validação de senha:', err);
-      }
-    } else {
-      setPasswordValidation(null);
-    }
-  };
 
   const handleRegister = async (values: any) => {
     setLoading(true);
@@ -74,21 +55,6 @@ export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormPr
     }
     
     return Promise.resolve();
-  };
-
-  const getPasswordStrengthColor = (score: number) => {
-    if (score >= 80) return '#52c41a';
-    if (score >= 60) return '#faad14';
-    if (score >= 40) return '#fa8c16';
-    return '#ff4d4f';
-  };
-
-  const getPasswordStrengthText = (score: number) => {
-    if (score >= 80) return 'Muito Forte';
-    if (score >= 60) return 'Forte';
-    if (score >= 40) return 'Média';
-    if (score >= 20) return 'Fraca';
-    return 'Muito Fraca';
   };
 
   return (
@@ -234,45 +200,8 @@ export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormPr
                 prefix={<LockOutlined />}
                 placeholder="Senha"
                 autoComplete="new-password"
-                onChange={(e) => handlePasswordChange(e.target.value)}
               />
             </Form.Item>
-
-            {passwordValidation && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <Text>Força da senha:</Text>
-                  <Text style={{ color: getPasswordStrengthColor(passwordValidation.score) }}>
-                    {getPasswordStrengthText(passwordValidation.score)}
-                  </Text>
-                </div>
-                <Progress
-                  percent={passwordValidation.score}
-                  strokeColor={getPasswordStrengthColor(passwordValidation.score)}
-                  showInfo={false}
-                />
-                
-                {passwordValidation.errors.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
-                    {passwordValidation.errors.map((error, index) => (
-                      <div key={index} style={{ color: '#ff4d4f', fontSize: 12 }}>
-                        ❌ {error}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
-                {passwordValidation.warnings.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
-                    {passwordValidation.warnings.map((warning, index) => (
-                      <div key={index} style={{ color: '#faad14', fontSize: 12 }}>
-                        ⚠️ {warning}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             <Form.Item
               name="cadastrante"
@@ -289,7 +218,6 @@ export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormPr
                 block
                 htmlType="submit"
                 loading={loading}
-                disabled={passwordValidation ? !passwordValidation.valid : false}
               >
                 Registrar
               </Button>

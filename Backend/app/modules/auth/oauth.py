@@ -6,12 +6,12 @@ from starlette.config import Config
 from fastapi import HTTPException, Request
 from typing import Optional, Dict, Any
 import httpx
+import os
 from ..auth.services import create_access_token
 from ...core.config import settings
 
-# Configuração OAuth
-config = Config('.env')
-oauth = OAuth(config)
+# Configuração OAuth - usa variáveis de ambiente diretamente
+oauth = OAuth()
 
 # Configuração Google OAuth
 oauth.register(
@@ -101,47 +101,41 @@ async def get_github_user_info(token: str) -> Optional[Dict[str, Any]]:
     return None
 
 async def authenticate_oauth_user(provider: str, code: str, request: Request) -> Dict[str, Any]:
-    """Autentica usuário via OAuth"""
+    """
+    Autentica usuário via OAuth
+    """
     try:
+        # Obtém token de acesso
+        token = await oauth.authorize_access_token(request)
+        
         if provider == 'google':
-            token = await oauth.google.authorize_access_token(request)
             user_info = await get_google_user_info(token['access_token'])
         elif provider == 'github':
-            token = await oauth.github.authorize_access_token(request)
             user_info = await get_github_user_info(token['access_token'])
         else:
             raise HTTPException(status_code=400, detail="Provedor OAuth não suportado")
         
         if not user_info:
-            raise HTTPException(status_code=400, detail="Não foi possível obter informações do usuário")
+            raise HTTPException(status_code=400, detail="Erro ao obter informações do usuário")
         
-        # Aqui você pode integrar com seu sistema de usuários
-        # Por enquanto, vamos simular um usuário
-        user = {
-            'email': user_info['email'],
-            'name': user_info['name'],
-            'provider': user_info['provider'],
-            'provider_id': user_info['provider_id'],
-            'picture': user_info.get('picture')
-        }
-        
-        # Cria token de acesso
-        access_token = create_access_token({"sub": user['email']})
+        # Cria ou atualiza usuário no banco
+        # Por enquanto, retorna token JWT
+        access_token = create_access_token({"sub": user_info['email']})
         
         return {
-            'user': user,
-            'access_token': access_token,
-            'message': f'Login realizado com sucesso via {provider.title()}'
+            "access_token": access_token,
+            "user": user_info
         }
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erro na autenticação OAuth: {str(e)}")
 
 def get_oauth_url(provider: str, request: Request) -> str:
-    """Gera URL de autorização OAuth"""
-    if provider == 'google':
-        return oauth.google.authorize_redirect(request, redirect_uri=settings.GOOGLE_REDIRECT_URI)
-    elif provider == 'github':
-        return oauth.github.authorize_redirect(request, redirect_uri=settings.GITHUB_REDIRECT_URI)
-    else:
-        raise HTTPException(status_code=400, detail="Provedor OAuth não suportado") 
+    """
+    Obtém URL de autorização OAuth
+    """
+    try:
+        redirect_uri = request.url_for(f"{provider}_callback")
+        return oauth.create_client(provider).authorize_redirect(request, redirect_uri)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao gerar URL OAuth: {str(e)}") 
