@@ -20,7 +20,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (data: { email: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean; user?: User }>;
+  login: (data: { email_or_username: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean; user?: User }>;
   register: (data: any) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   refreshUserToken: () => Promise<boolean>;
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (data: { email: string; password: string }) => {
+  const login = async (data: { email_or_username: string; password: string }) => {
     try {
       const response = await loginUser(data);
       

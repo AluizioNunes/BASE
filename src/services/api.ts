@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+const API_URL = import.meta.env.VITE_API_URL || "http://10.10.255.111/api/v1";
 
 // Configuração base da API
 const api = axios.create({
@@ -84,7 +84,7 @@ export interface PaginatedResponse<T> {
 
 // Interfaces para autenticação
 export interface LoginRequest {
-  email: string;
+  email_or_username: string;
   password: string;
 }
 

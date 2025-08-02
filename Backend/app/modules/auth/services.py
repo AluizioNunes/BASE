@@ -184,21 +184,21 @@ def log_login_attempt(email: str, success: bool, ip_address: str = None, user_ag
         # Log do erro mas não falha a autenticação
         print(f"Erro ao registrar auditoria: {e}")
 
-def authenticate_user(email: str, password: str, request: Request = None):
+def authenticate_user(email_or_username: str, password: str, request: Request = None):
     """
-    Autentica usuário usando a tabela Usuarios com bcrypt
+    Autentica usuário usando email ou nome de usuário na tabela Usuarios com bcrypt
     """
     try:
         with engine.connect() as conn:
-            # Busca usuário pelo email
+            # Busca usuário pelo email ou nome de usuário
             result = conn.execute(
-                text("SELECT * FROM \"Usuarios\" WHERE \"Email\" = :email"),
-                {"email": email}
+                text("SELECT * FROM \"Usuarios\" WHERE \"Email\" = :email_or_username OR \"Usuario\" = :email_or_username"),
+                {"email_or_username": email_or_username}
             )
             user = result.fetchone()
             
             if not user:
-                log_login_attempt(email, False, 
+                log_login_attempt(email_or_username, False, 
                                 request.client.host if request else None,
                                 request.headers.get("user-agent") if request else None)
                 return None
@@ -209,14 +209,14 @@ def authenticate_user(email: str, password: str, request: Request = None):
             if is_hashed:
                 # Senha já está hasheada, verifica com bcrypt
                 if not verify_password(password, user.Senha):
-                    log_login_attempt(email, False, 
+                    log_login_attempt(user.Email, False, 
                                     request.client.host if request else None,
                                     request.headers.get("user-agent") if request else None)
                     return None
             else:
                 # Senha em texto plano (migração)
                 if user.Senha != password:
-                    log_login_attempt(email, False, 
+                    log_login_attempt(user.Email, False, 
                                     request.client.host if request else None,
                                     request.headers.get("user-agent") if request else None)
                     return None
@@ -225,12 +225,12 @@ def authenticate_user(email: str, password: str, request: Request = None):
                 hashed_password = hash_password(password)
                 conn.execute(
                     text("UPDATE \"Usuarios\" SET \"Senha\" = :senha WHERE \"Email\" = :email"),
-                    {"senha": hashed_password, "email": email}
+                    {"senha": hashed_password, "email": user.Email}
                 )
                 conn.commit()
             
             # Registra login bem-sucedido
-            log_login_attempt(email, True, 
+            log_login_attempt(user.Email, True, 
                             request.client.host if request else None,
                             request.headers.get("user-agent") if request else None)
             

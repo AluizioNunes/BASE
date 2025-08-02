@@ -3,7 +3,7 @@ from typing import Optional, List
 import re
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email_or_username: str = Field(..., description="Email ou nome de usuário")
     password: str
 
 class RegisterRequest(BaseModel):

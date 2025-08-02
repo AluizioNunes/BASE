@@ -30,7 +30,7 @@ async def login(data: LoginRequest, response: Response, request: Request):
     """
     Login tradicional com email e senha
     """
-    user = authenticate_user(data.email, data.password, request)
+    user = authenticate_user(data.email_or_username, data.password, request)
     if not user:
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
     

@@ -17,7 +17,7 @@ export default function LoginForm({ onSuccess, onRegisterClick, onForgotPassword
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = async (values: { email: string; password: string }) => {
+  const handleLogin = async (values: { email_or_username: string; password: string }) => {
     setLoading(true);
     setError('');
     
@@ -69,16 +69,15 @@ export default function LoginForm({ onSuccess, onRegisterClick, onForgotPassword
             layout="vertical"
           >
             <Form.Item
-              name="email"
+              name="email_or_username"
               rules={[
-                { required: true, message: 'Por favor, insira seu email!' },
-                { type: 'email', message: 'Por favor, insira um email válido!' }
+                { required: true, message: 'Por favor, insira seu email ou usuário!' }
               ]}
             >
               <Input
                 size="large"
                 prefix={<MailOutlined />}
-                placeholder="Email"
+                placeholder="Email ou Usuário"
                 autoComplete="username"
               />
             </Form.Item>
