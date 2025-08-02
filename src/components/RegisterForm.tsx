@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Input, Button, Card, Alert, Typography, Space, Progress, Select } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined, SafetyOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
 
@@ -60,7 +60,7 @@ export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormPr
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   };
 
-  const validateCPF = (rule: any, value: string) => {
+  const validateCPF = (_: any, value: string) => {
     if (!value) return Promise.resolve();
     
     const cpf = value.replace(/\D/g, '');
@@ -289,7 +289,7 @@ export default function RegisterForm({ onSuccess, onLoginClick }: RegisterFormPr
                 block
                 htmlType="submit"
                 loading={loading}
-                disabled={passwordValidation && !passwordValidation.valid}
+                disabled={passwordValidation ? !passwordValidation.valid : false}
               >
                 Registrar
               </Button>

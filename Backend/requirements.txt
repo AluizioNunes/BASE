@@ -4,6 +4,7 @@ sqlalchemy
 pydantic
 python-dotenv
 psycopg[binary]
+email-validator>=2.0.0
 pytest
 loguru
 prometheus_client

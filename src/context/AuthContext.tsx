@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { 
   getProfile, 
   loginUser, 
@@ -26,8 +26,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (data: { email: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean }>;
-  loginMFA: (code: string) => Promise<{ success: boolean }>;
+  login: (data: { email: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean; user?: User }>;
+  loginMFA: (code: string) => Promise<{ success: boolean; user?: User }>;
   register: (data: any) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<{ success: boolean; message?: string }>;
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (response.user) {
         setUser(response.user);
-        return { success: true };
+        return { success: true, user: response.user };
       }
       
       return { success: false };
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await loginMFA(code);
       if (response.user) {
         setUser(response.user);
-        return { success: true };
+        return { success: true, user: response.user };
       }
       return { success: false };
     } catch (error: any) {
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const requestPasswordReset = async (email: string) => {
+  const requestPasswordReset = async (email: string): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await requestPasswordReset(email);
       return { success: true, message: response.message };
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const confirmPasswordReset = async (token: string, newPassword: string) => {
+  const confirmPasswordReset = async (token: string, newPassword: string): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await confirmPasswordReset(token, newPassword);
       return { success: true, message: response.message };
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const validatePassword = async (password: string) => {
+  const validatePassword = async (password: string): Promise<{ valid: boolean; errors: string[]; warnings: string[]; score: number }> => {
     try {
       const response = await validatePassword(password);
       return response;
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const setupMFA = async () => {
+  const setupMFA = async (): Promise<{ success: boolean; code?: string; message?: string }> => {
     try {
       const response = await setupMFA();
       return { success: true, code: response.mfa_code, message: response.message };
@@ -159,7 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const verifyMFASetup = async (code: string) => {
+  const verifyMFASetup = async (code: string): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await verifyMFASetup(code);
       // Atualiza usuário com MFA habilitado
