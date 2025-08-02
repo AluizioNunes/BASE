@@ -28,8 +28,38 @@ Este projeto é um template robusto para sistemas baseados em FastAPI (backend) 
    - Outras variáveis conforme necessário
 4. **Rode o deploy com Docker Compose:**
    ```bash
-   docker-compose up -d
+   docker-compose -f docker-compose.prod.yml up -d
    ```
+5. **Acesse o sistema**
+   - Frontend: http://<seu-ip>
+   - Wizard: http://<seu-ip>/wizard
+   - Login: http://<seu-ip>/login
+   - Backend: http://<seu-ip>/api/docs
+
+## 🔄 Recriar Banco de Dados
+
+O banco de dados é criado **automaticamente** quando você:
+
+1. **Roda o Docker Compose pela primeira vez** - o script `init-db.sql` executa automaticamente
+2. **Usa o Wizard de Setup** - cria o banco dinamicamente conforme a configuração
+
+### **Para recriar do zero:**
+```bash
+# Parar containers
+docker-compose -f docker-compose.prod.yml down
+
+# Remover volume do PostgreSQL
+docker volume rm BASE_pgsql_data
+
+# Iniciar containers (banco será criado automaticamente)
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### **Via Wizard:**
+1. Acesse: http://[IP]/wizard
+2. Configure o banco de dados
+3. Clique em "Finalizar Configuração"
+4. O banco será criado automaticamente
 
 ## Funcionalidades de Configuração
 

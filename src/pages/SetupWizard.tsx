@@ -11,6 +11,7 @@ const initialConfig = {
   DB_NAME: 'BASE',
   DB_USER: 'BASE',
   DB_PASSWORD: '',
+  DB_SCHEMA: 'BASE',
   VITE_API_URL: 'http://localhost:8000/api',
 };
 
@@ -108,6 +109,72 @@ export default function SetupWizard() {
     message.success('Arquivo .env gerado!');
   }
 
+  const handleFinish = async () => {
+    try {
+      message.loading('Criando banco de dados...', 0);
+      
+      // Primeiro, criar o banco de dados
+      const dbResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/create-database`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin': 'true' // Mock para admin
+        },
+        body: JSON.stringify({
+          DB_NAME: config.DB_NAME,
+          DB_USER: config.DB_USER,
+          DB_PASSWORD: config.DB_PASSWORD,
+          DB_SCHEMA: config.DB_SCHEMA || config.DB_NAME
+        })
+      });
+      
+      if (!dbResponse.ok) {
+        const errorData = await dbResponse.json();
+        message.destroy();
+        message.error(`Erro ao criar banco: ${errorData.detail}`);
+        return;
+      }
+      
+      const dbResult = await dbResponse.json();
+      message.destroy();
+      message.success(dbResult.message);
+      
+      // Aguardar um pouco para o banco estar pronto
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      message.loading('Salvando configurações...', 0);
+      
+      // Salvar configurações no .env
+      const configResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/config`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin': 'true'
+        },
+        body: JSON.stringify(config)
+      });
+      
+      if (!configResponse.ok) {
+        message.destroy();
+        message.error('Erro ao salvar configurações');
+        return;
+      }
+      
+      message.destroy();
+      message.success('Configuração concluída com sucesso!');
+      
+      // Aguardar um pouco antes de redirecionar
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Redirecionar para a página principal
+      window.location.href = '/';
+    } catch (error) {
+      message.destroy();
+      message.error('Erro ao finalizar configuração');
+      console.error('Erro:', error);
+    }
+  };
+
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', padding: 24 }}>
       <h2>Configuração Inicial do Sistema</h2>
@@ -118,6 +185,7 @@ export default function SetupWizard() {
       <div style={{ marginTop: 24, textAlign: 'right' }}>
         {current > 0 && <Button style={{ marginRight: 8 }} onClick={prev}>Voltar</Button>}
         {current < steps.length - 1 && <Button type="primary" onClick={next}>Próximo</Button>}
+        {current === steps.length - 1 && <Button type="primary" onClick={handleFinish}>Finalizar Configuração</Button>}
       </div>
     </div>
   );
