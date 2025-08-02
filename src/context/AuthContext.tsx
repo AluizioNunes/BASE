@@ -21,6 +21,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (data: { email_or_username: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean; user?: User }>;
+  loginDev: () => Promise<{ success: boolean; user?: User }>;
   register: (data: any) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   refreshUserToken: () => Promise<boolean>;
@@ -72,6 +73,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginDev = async () => {
+    try {
+      // Usuário de desenvolvimento simulado
+      const devUser: User = {
+        id: 999,
+        email: "dev@localhost",
+        name: "Desenvolvedor",
+        perfil: "Administrador",
+        funcao: "Desenvolvedor",
+        usuario: "DEV",
+        mfa_enabled: false
+      };
+      
+      setUser(devUser);
+      return { success: true, user: devUser };
+    } catch (error: any) {
+      console.error('Erro no login de desenvolvimento:', error);
+      return { success: false };
+    }
+  };
+
   const register = async (data: any) => {
     try {
       const response = await registerUser(data);
@@ -113,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     login,
+    loginDev,
     register,
     logout,
     refreshUserToken

@@ -13,7 +13,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }: LoginFormProps) {
-  const { login } = useAuth();
+  const { login, loginDev } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,6 +31,25 @@ export default function LoginForm({ onSuccess, onRegisterClick, onForgotPassword
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Erro no login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDevLogin = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await loginDev();
+      
+      if (result.success) {
+        onSuccess?.();
+      } else {
+        setError('Erro no login de desenvolvimento');
+      }
+    } catch (err: any) {
+      setError('Erro no login de desenvolvimento');
     } finally {
       setLoading(false);
     }
@@ -106,6 +125,31 @@ export default function LoginForm({ onSuccess, onRegisterClick, onForgotPassword
                 loading={loading}
               >
                 Entrar
+              </Button>
+            </Form.Item>
+
+            <Form.Item>
+              <div style={{ 
+                textAlign: 'center', 
+                marginBottom: '8px',
+                fontSize: '12px',
+                color: '#999'
+              }}>
+                ⚠️ Apenas para desenvolvimento
+              </div>
+              <Button
+                type="dashed"
+                size="large"
+                block
+                onClick={handleDevLogin}
+                loading={loading}
+                style={{ 
+                  borderColor: '#ff4d4f', 
+                  color: '#ff4d4f',
+                  marginTop: '4px'
+                }}
+              >
+                🔧 Login de Desenvolvimento
               </Button>
             </Form.Item>
           </Form>
