@@ -84,12 +84,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginMFA = async (code: string) => {
+  const loginMFA = async (code: string): Promise<{ success: boolean; user?: User }> => {
     try {
-      const response = await loginMFA(code);
-      if (response.user) {
-        setUser(response.user);
-        return { success: true, user: response.user };
+      const mfaResponse = await loginMFA(code);
+      if (mfaResponse.user) {
+        setUser(mfaResponse.user);
+        return { success: true, user: mfaResponse.user };
       }
       return { success: false };
     } catch (error: any) {
@@ -121,8 +121,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const requestPasswordReset = async (email: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      const response = await requestPasswordReset(email);
-      return { success: true, message: response.message };
+      const resetResponse = await requestPasswordReset(email);
+      return { success: true, message: resetResponse.message };
     } catch (error: any) {
       console.error('Erro ao solicitar reset:', error);
       return { success: false, message: error.response?.data?.detail || 'Erro ao solicitar reset' };
@@ -131,8 +131,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const confirmPasswordReset = async (token: string, newPassword: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      const response = await confirmPasswordReset(token, newPassword);
-      return { success: true, message: response.message };
+      const confirmResponse = await confirmPasswordReset(token, newPassword);
+      return { success: true, message: confirmResponse.message };
     } catch (error: any) {
       console.error('Erro ao confirmar reset:', error);
       return { success: false, message: error.response?.data?.detail || 'Erro ao confirmar reset' };
@@ -141,8 +141,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const validatePassword = async (password: string): Promise<{ valid: boolean; errors: string[]; warnings: string[]; score: number }> => {
     try {
-      const response = await validatePassword(password);
-      return response;
+      const validationResponse = await validatePassword(password);
+      return validationResponse;
     } catch (error: any) {
       console.error('Erro na validação de senha:', error);
       return { valid: false, errors: ['Erro na validação'], warnings: [], score: 0 };
@@ -151,8 +151,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setupMFA = async (): Promise<{ success: boolean; code?: string; message?: string }> => {
     try {
-      const response = await setupMFA();
-      return { success: true, code: response.mfa_code, message: response.message };
+      const mfaResponse = await setupMFA();
+      return { success: true, code: mfaResponse.mfa_code, message: mfaResponse.message };
     } catch (error: any) {
       console.error('Erro ao configurar MFA:', error);
       return { success: false, message: error.response?.data?.detail || 'Erro ao configurar MFA' };
@@ -161,12 +161,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyMFASetup = async (code: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      const response = await verifyMFASetup(code);
+      const verifyResponse = await verifyMFASetup(code);
       // Atualiza usuário com MFA habilitado
       if (user) {
         setUser({ ...user, mfa_enabled: true });
       }
-      return { success: true, message: response.message };
+      return { success: true, message: verifyResponse.message };
     } catch (error: any) {
       console.error('Erro ao verificar MFA:', error);
       return { success: false, message: error.response?.data?.detail || 'Erro ao verificar MFA' };

@@ -144,7 +144,7 @@ async def login_mfa(data: MFARequest, response: Response, request: Request):
 
 @router.post("/register", response_model=RegisterResponse)
 @limiter.limit("3/minute")
-async def register(data: RegisterRequest):
+async def register(data: RegisterRequest, request: Request):
     """
     Registro de novo usuário
     """

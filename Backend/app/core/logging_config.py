@@ -36,12 +36,11 @@ class StructuredLogger:
         # Remove handlers padrão
         self.logger.remove()
         
-        # Handler para console com formato estruturado
+        # Handler para console com formato simples
         self.logger.add(
             sys.stdout,
-            format=self._format_record,
+            format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
             level="INFO" if not settings.DEBUG else "DEBUG",
-            serialize=True,
             backtrace=True,
             diagnose=True
         )
@@ -49,35 +48,21 @@ class StructuredLogger:
         # Handler para arquivo de logs
         self.logger.add(
             "logs/app.log",
-            format=self._format_record,
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
             level="INFO",
             rotation="10 MB",
             retention="30 days",
-            compression="gz",
-            serialize=True
+            compression="gz"
         )
         
         # Handler para erros
         self.logger.add(
             "logs/error.log",
-            format=self._format_record,
+            format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
             level="ERROR",
             rotation="10 MB",
             retention="90 days",
-            compression="gz",
-            serialize=True
-        )
-        
-        # Handler para performance
-        self.logger.add(
-            "logs/performance.log",
-            format=self._format_record,
-            level="INFO",
-            filter=lambda record: "performance" in record["extra"],
-            rotation="10 MB",
-            retention="7 days",
-            compression="gz",
-            serialize=True
+            compression="gz"
         )
 
 # Instância global do logger estruturado
