@@ -1,14 +1,9 @@
 -- Script de inicialização do PostgreSQL
 -- Este script é executado automaticamente quando o container PostgreSQL é criado pela primeira vez
 
--- Garantir que a database BASE existe
-SELECT 'CREATE DATABASE BASE'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'BASE')\gexec
-
--- Conectar à database BASE
-\c BASE;
-
--- Criar schema BASE se não existir
+-- Garantir que a database existe (será substituída pela variável DB_NAME)
+-- O PostgreSQL já cria a database automaticamente baseado em POSTGRES_DB
+-- Apenas criar o schema se não existir
 CREATE SCHEMA IF NOT EXISTS "BASE";
 
 -- Criar tabela Usuarios se não existir
@@ -48,8 +43,7 @@ CREATE INDEX IF NOT EXISTS idx_usuarios_email ON "BASE"."Usuarios" ("Email");
 CREATE INDEX IF NOT EXISTS idx_usuarios_usuario ON "BASE"."Usuarios" ("Usuario");
 CREATE INDEX IF NOT EXISTS idx_usuarios_ativo ON "BASE"."Usuarios" ("Ativo");
 
--- Garantir permissões
-GRANT ALL PRIVILEGES ON DATABASE BASE TO BASE;
-GRANT ALL PRIVILEGES ON SCHEMA "BASE" TO BASE;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "BASE" TO BASE;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "BASE" TO BASE; 
+-- Garantir permissões (usando variáveis do ambiente)
+GRANT ALL PRIVILEGES ON SCHEMA "BASE" TO CURRENT_USER;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "BASE" TO CURRENT_USER;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "BASE" TO CURRENT_USER; 

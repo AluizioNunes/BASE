@@ -1,6 +1,6 @@
 // Para usar este componente, instale @mui/material:
 // npm install @mui/material @emotion/react @emotion/styled
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, Form, Input, Button, message, Upload } from 'antd';
 import { UploadOutlined, SaveOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
