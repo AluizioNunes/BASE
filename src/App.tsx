@@ -1,6 +1,6 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy } from 'react';
 import BaseLayout from './layouts/BaseLayout';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -31,21 +31,10 @@ const PageLoading = () => (
 );
 
 export default function App() {
-  const [appName, setAppName] = useState('BASE');
-  useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL + '/health')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.app_name) setAppName(data.app_name);
-      })
-      .catch(() => {
-        // Se não conseguir conectar, mantém o nome padrão
-      });
-  }, []);
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoading />}>
-        <div style={{padding: 8, fontWeight: 'bold'}}>{appName}</div>
+
         <Routes>
           {/* Rota pública de login */}
           <Route path="/login" element={<Login />} />
