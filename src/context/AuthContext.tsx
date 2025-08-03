@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { 
   getProfile, 
   loginUser, 
@@ -6,6 +6,7 @@ import {
   registerUser, 
   refreshToken
 } from '../services/api';
+import type { RegisterRequest } from '../services/api';
 
 interface User {
   id: number;
@@ -22,7 +23,7 @@ interface AuthContextType {
   loading: boolean;
   login: (data: { email_or_username: string; password: string }) => Promise<{ success: boolean; requiresMFA?: boolean; user?: User }>;
   loginDev: () => Promise<{ success: boolean; user?: User }>;
-  register: (data: any) => Promise<{ success: boolean; message?: string }>;
+  register: (data: RegisterRequest) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
   refreshUserToken: () => Promise<boolean>;
 }
@@ -40,9 +41,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
+      // Verifica se há token antes de tentar buscar perfil
+      const hasToken = document.cookie.includes('access_token');
+      if (!hasToken) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      
       const profile = await getProfile();
       setUser(profile);
-    } catch (error) {
+    } catch {
       // Tenta refresh token se falhar
       const refreshed = await refreshUserToken();
       if (!refreshed) {
@@ -67,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       return { success: false };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login:', error);
       return { success: false };
     }
@@ -88,19 +97,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       setUser(devUser);
       return { success: true, user: devUser };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no login de desenvolvimento:', error);
       return { success: false };
     }
   };
 
-  const register = async (data: any) => {
+  const register = async (data: RegisterRequest) => {
     try {
       const response = await registerUser(data);
       return { success: true, message: response.message };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro no registro:', error);
-      return { success: false, message: error.response?.data?.detail || 'Erro no registro' };
+      return { success: false, message: 'Erro no registro' };
     }
   };
 
@@ -148,10 +157,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuthContext() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext deve ser usado dentro de um AuthProvider');
-  }
-  return context;
-} 
+export { AuthContext }; 
