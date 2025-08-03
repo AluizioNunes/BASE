@@ -8,7 +8,6 @@ Este documento descreve a estrutura de rotas configuradas no Traefik para o sist
 
 ### **Frontend (React)**
 - **Página Principal:** `http://[IP]/` ou `https://[IP]/`
-- **Wizard de Setup:** `http://[IP]/wizard` ou `https://[IP]/wizard`
 - **Login:** `http://[IP]/login` ou `https://[IP]/login`
 - **Outras Páginas:** `http://[IP]/[outras-rotas]`
 
@@ -27,7 +26,7 @@ Este documento descreve a estrutura de rotas configuradas no Traefik para o sist
 ### **Prioridades das Rotas**
 1. **Prioridade 100:** Traefik Dashboard
 2. **Prioridade 50:** Grafana
-3. **Prioridade 20:** Wizard e Login
+3. **Prioridade 20:** Login
 4. **Prioridade 10:** Frontend Principal e Backend API
 5. **Prioridade 1:** Outras páginas do Frontend (fallback)
 
@@ -36,9 +35,8 @@ Este documento descreve a estrutura de rotas configuradas no Traefik para o sist
 ```yaml
 # Frontend - Rotas específicas
 frontend-main:     Path(`/`)                    # Página inicial
-frontend-wizard:   PathPrefix(`/wizard`)        # Wizard de setup
 frontend-login:    PathPrefix(`/login`)         # Página de login
-frontend-other:    !PathPrefix(`/api|/grafana|/rabbitmq|/loki|/traefik|/wizard|/login`)
+frontend-other:    !PathPrefix(`/api|/grafana|/rabbitmq|/loki|/traefik|/login`)
 
 # Backend
 backend:           PathPrefix(`/api`)           # API REST
@@ -56,9 +54,9 @@ rabbitmq:          PathPrefix(`/rabbitmq`)      # Management RabbitMQ
 http://10.10.255.111/
 ```
 
-### **2. Setup Inicial**
+### **2. Configurações**
 ```
-http://10.10.255.111/wizard
+http://10.10.255.111/configuracoes
 ```
 
 ### **3. Login**
@@ -88,7 +86,7 @@ http://10.10.255.111/rabbitmq
 
 ## 📝 **Notas**
 
-- O **Wizard** e **Login** têm prioridade alta para garantir acesso
+- O **Login** tem prioridade alta para garantir acesso
 - O **Frontend** principal serve como fallback para rotas não encontradas
 - **Grafana** e **Traefik** têm prioridade média para administração
 - **RabbitMQ** tem prioridade baixa (ferramenta de desenvolvimento) 

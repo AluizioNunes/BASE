@@ -6,7 +6,6 @@
 
 #### **Frontend (React)**
 - **Página Principal:** `http://[IP]/` ou `https://[IP]/`
-- **Wizard de Setup:** `http://[IP]/wizard` ou `https://[IP]/wizard`
 - **Login:** `http://[IP]/login` ou `https://[IP]/login`
 - **Outras Páginas:** `http://[IP]/[outras-rotas]`
 
@@ -24,14 +23,11 @@
 
 #### **Docker Compose (`docker-compose.prod.yml`)**
 - ✅ Reorganizadas as rotas do frontend com prioridades específicas
-- ✅ Criadas rotas separadas para `/wizard` e `/login`
-- ✅ Mantida compatibilidade com rota `/setup` (redireciona para `/wizard`)
+- ✅ Criadas rotas separadas para `/login`
 - ✅ Ajustadas prioridades das rotas para melhor organização
 
 #### **Frontend (`src/App.tsx`)**
-- ✅ Adicionada rota `/wizard` para o SetupWizard
-- ✅ Mantida rota `/setup` para compatibilidade
-- ✅ Removida lógica de auto-redirecionamento para wizard
+- ✅ Removido Wizard de setup inicial
 - ✅ Simplificado o carregamento do nome da aplicação
 
 #### **Documentação**
@@ -41,7 +37,7 @@
 ### 📋 **Prioridades das Rotas**
 1. **Prioridade 100:** Traefik Dashboard
 2. **Prioridade 50:** Grafana
-3. **Prioridade 20:** Wizard e Login
+3. **Prioridade 20:** Login
 4. **Prioridade 10:** Frontend Principal e Backend API
 5. **Prioridade 1:** Outras páginas do Frontend (fallback)
 
@@ -52,9 +48,9 @@
 http://10.10.255.111/
 ```
 
-#### **Setup Inicial**
+#### **Configurações**
 ```
-http://10.10.255.111/wizard
+http://10.10.255.111/configuracoes
 ```
 
 #### **Login**
@@ -100,7 +96,6 @@ Transformar o projeto BASE em um template reutilizável para futuros projetos.
 
 ### 🔧 **Mudanças Implementadas**
 - ✅ Centralização de configurações em variáveis de ambiente
-- ✅ Criação de wizard de setup inicial
 - ✅ Interface de configurações no frontend
 - ✅ API para gerenciamento de configurações
 - ✅ Documentação completa para uso como template
@@ -110,4 +105,4 @@ Transformar o projeto BASE em um template reutilizável para futuros projetos.
 2. Copie `Backend/env.example` para `Backend/.env`
 3. Edite o `.env` com suas configurações
 4. Execute `docker-compose -f docker-compose.prod.yml up -d`
-5. Acesse `http://[IP]/wizard` para configuração inicial 
+5. Acesse `http://[IP]/configuracoes` para configuração (apenas administradores) 

@@ -1,9 +1,8 @@
 
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import BaseLayout from './layouts/BaseLayout';
 import PrivateRoute from './components/PrivateRoute';
-import SetupWizard from './pages/SetupWizard';
 
 // Lazy loading das páginas
 const Login = lazy(() => import('./pages/Login'));
@@ -11,6 +10,7 @@ const Home = lazy(() => import('./pages/Home'));
 const Usuario = lazy(() => import('./pages/Usuario'));
 const Perfil = lazy(() => import('./pages/Perfil'));
 const Permissao = lazy(() => import('./pages/Permissao'));
+const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 
 // Lazy loading dos novos dashboards
 const DashboardFinanceiro = lazy(() => import('./pages/DashboardFinanceiro'));
@@ -45,12 +45,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoading />}>
-        <div style={{padding: 8, fontWeight: 'bold'}}>{appName} | <Link to="/wizard">Configuração Inicial</Link></div>
+        <div style={{padding: 8, fontWeight: 'bold'}}>{appName}</div>
         <Routes>
           {/* Rota pública de login */}
           <Route path="/login" element={<Login />} />
-          <Route path="/wizard" element={<SetupWizard />} />
-          <Route path="/setup" element={<SetupWizard />} /> {/* Mantido para compatibilidade */}
           {/* Rotas protegidas */}
           <Route path="/" element={
             <PrivateRoute>
@@ -80,6 +78,14 @@ export default function App() {
             <PrivateRoute>
               <BaseLayout>
                 <Permissao />
+              </BaseLayout>
+            </PrivateRoute>
+          } />
+          
+          <Route path="/configuracoes" element={
+            <PrivateRoute>
+              <BaseLayout>
+                <Configuracoes />
               </BaseLayout>
             </PrivateRoute>
           } />

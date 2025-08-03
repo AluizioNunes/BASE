@@ -51,6 +51,7 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
             if (key === 'usuarios') navigate('/usuarios');
             if (key === 'perfil') navigate('/perfil');
             if (key === 'permissao') navigate('/permissao');
+            if (key === 'configuracoes') navigate('/configuracoes');
           }}
         >
           <Menu.Item key="painel" icon={<DashboardOutlined style={{ fontSize: 24, marginRight: 16 }} />}>
@@ -96,6 +97,7 @@ export default function Sidebar({ collapsed, setCollapsed }: { collapsed: boolea
             <Menu.Item key="usuarios"><motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>USUÁRIOS</motion.div></Menu.Item>
             <Menu.Item key="perfil"><motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>PERFIL</motion.div></Menu.Item>
             <Menu.Item key="permissao"><motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>PERMISSÕES</motion.div></Menu.Item>
+            <Menu.Item key="configuracoes"><motion.div whileHover={{ scale: 1.07 }} whileTap={{ scale: 0.97 }}>CONFIGURAÇÕES</motion.div></Menu.Item>
           </Menu.SubMenu>
         </Menu>
       </Sider>

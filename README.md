@@ -6,17 +6,16 @@ Este projeto é um template robusto para sistemas baseados em FastAPI (backend) 
 
 ### Opção 1: Configuração Visual (Recomendado)
 1. **Clone o repositório**
-2. **Rode o sistema:**
+2. **Copie o arquivo `Backend/env.example` para `Backend/.env`**
+3. **Edite o `.env` com suas configurações**
+4. **Rode o sistema:**
    ```bash
-   docker-compose up -d
+   docker-compose -f docker-compose.prod.yml up -d
    ```
-3. **Acesse o sistema e use o Wizard de Configuração:**
-   - Acesse: http://<seu-ip>
-   - Clique em "Configuração Inicial" no topo
-   - Preencha as configurações passo a passo
-   - Baixe o arquivo `.env` gerado
-   - Coloque o `.env` na pasta `Backend/`
-   - Reinicie os containers: `docker-compose restart`
+5. **Acesse o sistema:**
+   - Frontend: http://<seu-ip>
+   - Login: http://<seu-ip>/login
+   - Backend: http://<seu-ip>/api/docs
 
 ### Opção 2: Configuração Manual
 1. **Clone o repositório**
@@ -55,21 +54,13 @@ docker volume rm BASE_pgsql_data
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### **Via Wizard:**
-1. Acesse: http://[IP]/wizard
-2. Configure o banco de dados
-3. Clique em "Finalizar Configuração"
+### **Via Configurações:**
+1. Acesse: http://[IP]/configuracoes (apenas administradores)
+2. Configure o banco de dados na aba "Banco de Dados"
+3. Salve as configurações
 4. O banco será criado automaticamente
 
 ## Funcionalidades de Configuração
-
-### Wizard de Setup Inicial
-- **Acesso via:** Link "Configuração Inicial" no topo da tela
-- **Funcionalidades:**
-  - Configuração passo a passo (Geral → Banco → API → Finalizar)
-  - Upload de arquivo `.env` existente
-  - Download do `.env` gerado
-  - Validação de campos obrigatórios
 
 ### Tela de Configurações (Administradores)
 - **Acesso via:** Menu do sistema (apenas para administradores)
